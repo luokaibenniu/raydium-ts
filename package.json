@@ -14,7 +14,7 @@
     "build": "lerna run build",
     "lint": "eslint 'packages/*/{src,test}/**/*.ts' && prettier -c 'packages/*/{src,test}/**/*.ts'",
     "lint:fix": "eslint --fix 'packages/*/{src,test}/**/*.ts' && prettier --write 'packages/*/{src,test}/**/*.ts'",
-    "deploy": "lerna run deploy:app",
+    "publish": "lerna publish --contents packages",
     "test": "lerna run test --concurrency 1 --stream"
   },
   "lint-staged": {

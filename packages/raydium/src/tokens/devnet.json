@@ -1,8 +1,8 @@
 [
   {
-    "tokenSymbol": "SOL",
+    "symbol": "SOL",
     "mintAddress": "So11111111111111111111111111111111111111112",
-    "tokenName": "Solana",
+    "name": "Solana",
     "decimals": 9
   }
 ]

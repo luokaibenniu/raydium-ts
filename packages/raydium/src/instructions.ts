@@ -1,152 +1,68 @@
-import { Layout } from 'buffer-layout';
-import { TransactionInstruction } from '@solana/web3.js';
+import { struct, u8, nu64 } from 'buffer-layout';
+import { PublicKey, TransactionInstruction } from '@solana/web3.js';
 
-import { DEPOSIT_LAYOUT } from './layouts';
-
-export function encodeData(type, fields) {
-  const allocLength =
-    type.layout.span >= 0 ? type.layout.span : Layout.getAlloc(type, fields);
-  const data = Buffer.alloc(allocLength);
-  const layoutFields = Object.assign({ instruction: type.index }, fields);
-  type.layout.encode(layoutFields, data);
-  return data;
-}
+import { TOKEN_PROGRAM_ID } from './ids';
 
 export function depositInstruction(
-  programId,
-  amm,
-  auth,
-  tokenProgramId,
-  openOrders,
-  mintPool,
-  ammTokenA,
-  ammTokenB,
-  market,
-  depositTokenA,
-  depositTokenB,
-  lp,
-  depositTokenOwnerA,
-  depositTokenOwnerB,
-  maxAmountA,
-  maxAmountB,
-  tolerate,
-) {
-  return new TransactionInstruction({
-    keys: [
-      { pubkey: amm, isSigner: false, isWritable: true },
-      { pubkey: auth, isSigner: false, isWritable: true },
-      { pubkey: tokenProgramId, isSigner: false, isWritable: true },
-      { pubkey: openOrders, isSigner: false, isWritable: true },
-      { pubkey: mintPool, isSigner: false, isWritable: true },
-      { pubkey: ammTokenA, isSigner: false, isWritable: true },
-      { pubkey: ammTokenB, isSigner: false, isWritable: true },
-      { pubkey: market, isSigner: false, isWritable: true },
-      { pubkey: depositTokenA, isSigner: false, isWritable: true },
-      { pubkey: depositTokenB, isSigner: false, isWritable: true },
-      { pubkey: lp, isSigner: false, isWritable: true },
-      { pubkey: depositTokenOwnerA, isSigner: true, isWritable: true },
-      { pubkey: depositTokenOwnerB, isSigner: true, isWritable: false },
-    ],
-    programId,
-    data: encodeData(DEPOSIT_LAYOUT, {
+  programId: PublicKey,
+  amm: PublicKey,
+  authority: PublicKey,
+  // tokenProgramId: PublicKey,
+  openOrders: PublicKey,
+  lpMintAddress: PublicKey,
+  poolTokenAccountA: PublicKey,
+  poolTokenAccountB: PublicKey,
+  market: PublicKey,
+  // user
+  userTokenAccountA: PublicKey,
+  userTokenAccountB: PublicKey,
+
+  poolLpAccount: PublicKey,
+  // user
+  tokenAccountOwnerA: PublicKey,
+  tokenAccountOwnerB: PublicKey,
+
+  maxAmountA: number,
+  maxAmountB: number,
+  tolerate: number,
+): TransactionInstruction {
+  const dataLayout = struct([
+    u8('instruction'),
+    nu64('maxAmountA'),
+    nu64('maxAmountB'),
+    nu64('tolerate'),
+  ]);
+
+  const keys = [
+    { pubkey: amm, isSigner: false, isWritable: true },
+    { pubkey: authority, isSigner: false, isWritable: true },
+    { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: true },
+    { pubkey: openOrders, isSigner: false, isWritable: true },
+    { pubkey: lpMintAddress, isSigner: false, isWritable: true },
+    { pubkey: poolTokenAccountA, isSigner: false, isWritable: true },
+    { pubkey: poolTokenAccountB, isSigner: false, isWritable: true },
+    { pubkey: market, isSigner: false, isWritable: true },
+    { pubkey: userTokenAccountA, isSigner: false, isWritable: true },
+    { pubkey: userTokenAccountB, isSigner: false, isWritable: true },
+    { pubkey: poolLpAccount, isSigner: false, isWritable: true },
+    { pubkey: tokenAccountOwnerA, isSigner: true, isWritable: true },
+    { pubkey: tokenAccountOwnerB, isSigner: true, isWritable: true },
+  ];
+
+  const data = Buffer.alloc(dataLayout.span);
+  dataLayout.encode(
+    {
       instruction: 3,
       maxAmountA: maxAmountA,
       maxAmountB: maxAmountB,
       tolerate: tolerate,
-    }),
-  });
-}
+    },
+    data,
+  );
 
-export function withdrawInstruction(
-  programId,
-  amm,
-  auth,
-  tokenProgramId,
-  openOrders,
-  mintPool,
-  ammTokenA,
-  ammTokenB,
-  serumDex,
-  market,
-  vaultA,
-  vaultB,
-  lpSource,
-  destA,
-  destB,
-  vaultSigner,
-  lpSourceOwner,
-  withdraw,
-  tempLp,
-  amount,
-) {
   return new TransactionInstruction({
-    keys: [
-      { pubkey: amm, isSigner: false, isWritable: true },
-      { pubkey: auth, isSigner: false, isWritable: true },
-      { pubkey: tokenProgramId, isSigner: false, isWritable: true },
-      { pubkey: openOrders, isSigner: false, isWritable: true },
-      { pubkey: mintPool, isSigner: false, isWritable: true },
-      { pubkey: ammTokenA, isSigner: false, isWritable: true },
-      { pubkey: ammTokenB, isSigner: false, isWritable: true },
-      { pubkey: serumDex, isSigner: false, isWritable: true },
-      { pubkey: market, isSigner: false, isWritable: true },
-      { pubkey: vaultA, isSigner: false, isWritable: true },
-      { pubkey: vaultB, isSigner: false, isWritable: true },
-      { pubkey: lpSource, isSigner: false, isWritable: true },
-      { pubkey: destA, isSigner: false, isWritable: true },
-      { pubkey: destB, isSigner: false, isWritable: true },
-      { pubkey: vaultSigner, isSigner: false, isWritable: true },
-      { pubkey: lpSourceOwner, isSigner: true, isWritable: true },
-      { pubkey: withdraw, isSigner: false, isWritable: true },
-      { pubkey: tempLp, isSigner: false, isWritable: true },
-    ],
+    keys,
     programId,
-    data: encodeData(DEPOSIT_LAYOUT, {
-      instruction: 4,
-      amount: amount,
-    }),
-  });
-}
-
-export function withdrawTransferInstruction(
-  programId,
-  amm,
-  auth,
-  tokenProgramId,
-  openOrders,
-  mintPool,
-  ammTokenA,
-  ammTokenB,
-  serumDex,
-  market,
-  vaultA,
-  vaultB,
-  vaultSigner,
-  withdraw,
-  tempLp,
-  limit,
-) {
-  return new TransactionInstruction({
-    keys: [
-      { pubkey: amm, isSigner: false, isWritable: true },
-      { pubkey: auth, isSigner: false, isWritable: true },
-      { pubkey: tokenProgramId, isSigner: false, isWritable: true },
-      { pubkey: openOrders, isSigner: false, isWritable: true },
-      { pubkey: mintPool, isSigner: false, isWritable: true },
-      { pubkey: ammTokenA, isSigner: false, isWritable: true },
-      { pubkey: ammTokenB, isSigner: false, isWritable: true },
-      { pubkey: serumDex, isSigner: false, isWritable: true },
-      { pubkey: market, isSigner: false, isWritable: true },
-      { pubkey: vaultA, isSigner: false, isWritable: true },
-      { pubkey: vaultB, isSigner: false, isWritable: true },
-      { pubkey: vaultSigner, isSigner: false, isWritable: true },
-      { pubkey: withdraw, isSigner: false, isWritable: true },
-      { pubkey: tempLp, isSigner: false, isWritable: true },
-    ],
-    programId,
-    data: encodeData(DEPOSIT_LAYOUT, {
-      instruction: 5,
-      limit: limit,
-    }),
+    data,
   });
 }

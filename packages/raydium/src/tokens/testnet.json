@@ -1,14 +1,14 @@
 [
   {
-    "tokenSymbol": "SOL",
+    "symbol": "SOL",
     "mintAddress": "So11111111111111111111111111111111111111112",
-    "tokenName": "Solana",
+    "name": "Solana",
     "decimals": 9
   },
   {
-    "tokenSymbol": "ABC",
+    "symbol": "ABC",
     "mintAddress": "D4fdoY5d2Bn1Cmjqy6J6shRHjcs7QNuBPzwEzTLrf7jm",
-    "tokenName": "ABC Test",
+    "name": "ABC Test",
     "decimals": 2
   }
 ]

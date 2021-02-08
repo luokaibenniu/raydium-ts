@@ -1,194 +1,194 @@
 [
   {
-    "tokenSymbol": "SOL",
+    "symbol": "SOL",
     "mintAddress": "So11111111111111111111111111111111111111112",
-    "tokenName": "Solana",
+    "name": "Solana",
     "decimals": 9
   },
   {
-    "tokenSymbol": "BTC",
+    "symbol": "BTC",
     "mintAddress": "9n4nbM75f5Ui33ZbPYXn59EwSgE8CGsHtAeTH5YFeJ9E",
-    "tokenName": "Wrapped Bitcoin",
+    "name": "Wrapped Bitcoin",
     "decimals": 6
   },
   {
-    "tokenSymbol": "ETH",
+    "symbol": "ETH",
     "mintAddress": "2FPyTwcZLUg1MDrwsyoP4D6s1tM7hAkHYRjkNb5w6Pxk",
-    "tokenName": "Wrapped Ethereum",
+    "name": "Wrapped Ethereum",
     "decimals": 6
   },
   {
-    "tokenSymbol": "USDC",
+    "symbol": "USDC",
     "mintAddress": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
-    "tokenName": "USDC",
+    "name": "USDC",
     "decimals": 6
   },
   {
-    "tokenSymbol": "YFI",
+    "symbol": "YFI",
     "mintAddress": "3JSf5tPeuscJGtaCp5giEiDhv51gQ4v3zWg8DGgyLfAB",
-    "tokenName": "Wrapped YFI",
+    "name": "Wrapped YFI",
     "decimals": 6
   },
   {
-    "tokenSymbol": "LINK",
+    "symbol": "LINK",
     "mintAddress": "CWE8jPTUYhdCTZYWPTe1o5DFqfdjzWKc9WKz6rSjQUdG",
-    "tokenName": "Wrapped Chainlink",
+    "name": "Wrapped Chainlink",
     "decimals": 6
   },
   {
-    "tokenSymbol": "XRP",
+    "symbol": "XRP",
     "mintAddress": "Ga2AXHpfAF6mv2ekZwcsJFqu7wB4NV331qNH7fW9Nst8",
-    "tokenName": "Wrapped XRP",
+    "name": "Wrapped XRP",
     "decimals": 6
   },
   {
-    "tokenSymbol": "USDT",
+    "symbol": "USDT",
     "mintAddress": "BQcdHdAQW1hczDbBi9hiegXAR7A98Q9jx3X3iBBBDiq4",
-    "tokenName": "Wrapped USDT",
+    "name": "Wrapped USDT",
     "decimals": 6
   },
   {
-    "tokenSymbol": "SUSHI",
+    "symbol": "SUSHI",
     "mintAddress": "AR1Mtgh7zAtxuxGd2XPovXPVjcSdY3i4rQYisNadjfKy",
-    "tokenName": "Wrapped SUSHI",
+    "name": "Wrapped SUSHI",
     "decimals": 6
   },
   {
-    "tokenSymbol": "ALEPH",
+    "symbol": "ALEPH",
     "mintAddress": "CsZ5LZkDS7h9TDKjrbL7VAwQZ9nsRu8vJLhRYfmGaN8K",
-    "tokenName": "Wrapped ALEPH",
+    "name": "Wrapped ALEPH",
     "decimals": 6
   },
   {
-    "tokenSymbol": "SXP",
+    "symbol": "SXP",
     "mintAddress": "SF3oTvfWzEP3DTwGSvUXRrGTvr75pdZNnBLAH9bzMuX",
-    "tokenName": "Wrapped SXP",
+    "name": "Wrapped SXP",
     "decimals": 6
   },
   {
-    "tokenSymbol": "HGET",
+    "symbol": "HGET",
     "mintAddress": "BtZQfWqDGbk9Wf2rXEiWyQBdBY1etnUUn6zEphvVS7yN",
-    "tokenName": "Wrapped HGET",
+    "name": "Wrapped HGET",
     "decimals": 6
   },
   {
-    "tokenSymbol": "CREAM",
+    "symbol": "CREAM",
     "mintAddress": "5Fu5UUgbjpUvdBveb3a1JTNirL8rXtiYeSMWvKjtUNQv",
-    "tokenName": "Wrapped CREAM",
+    "name": "Wrapped CREAM",
     "decimals": 6
   },
   {
-    "tokenSymbol": "UBXT",
+    "symbol": "UBXT",
     "mintAddress": "873KLxCbz7s9Kc4ZzgYRtNmhfkQrhfyWGZJBmyCbC3ei",
-    "tokenName": "Wrapped UBXT",
+    "name": "Wrapped UBXT",
     "decimals": 6
   },
   {
-    "tokenSymbol": "HNT",
+    "symbol": "HNT",
     "mintAddress": "HqB7uswoVg4suaQiDP3wjxob1G5WdZ144zhdStwMCq7e",
-    "tokenName": "Wrapped HNT",
+    "name": "Wrapped HNT",
     "decimals": 6
   },
   {
-    "tokenSymbol": "FRONT",
+    "symbol": "FRONT",
     "mintAddress": "9S4t2NEAiJVMvPdRYKVrfJpBafPBLtvbvyS3DecojQHw",
-    "tokenName": "Wrapped FRONT",
+    "name": "Wrapped FRONT",
     "decimals": 6
   },
   {
-    "tokenSymbol": "AKRO",
+    "symbol": "AKRO",
     "mintAddress": "6WNVCuxCGJzNjmMZoKyhZJwvJ5tYpsLyAtagzYASqBoF",
-    "tokenName": "Wrapped AKRO",
+    "name": "Wrapped AKRO",
     "decimals": 6
   },
   {
-    "tokenSymbol": "HXRO",
+    "symbol": "HXRO",
     "mintAddress": "DJafV9qemGp7mLMEn5wrfqaFwxsbLgUsGVS16zKRk9kc",
-    "tokenName": "Wrapped HXRO",
+    "name": "Wrapped HXRO",
     "decimals": 6
   },
   {
-    "tokenSymbol": "UNI",
+    "symbol": "UNI",
     "mintAddress": "DEhAasscXF4kEGxFgJ3bq4PpVGp5wyUxMRvn6TzGVHaw",
-    "tokenName": "Wrapped UNI",
+    "name": "Wrapped UNI",
     "decimals": 6
   },
   {
-    "tokenSymbol": "SRM",
+    "symbol": "SRM",
     "mintAddress": "SRMuApVNdxXokk5GT7XD5cUUgXMBCoAz2LHeuAoKWRt",
-    "tokenName": "Serum",
+    "name": "Serum",
     "decimals": 6
   },
   {
-    "tokenSymbol": "FTT",
+    "symbol": "FTT",
     "mintAddress": "AGFEad2et2ZJif9jaGpdMixQqvW5i81aBdvKe7PHNfz3",
-    "tokenName": "Wrapped FTT",
+    "name": "Wrapped FTT",
     "decimals": 6
   },
   {
-    "tokenSymbol": "MSRM",
+    "symbol": "MSRM",
     "mintAddress": "MSRMcoVyrFxnSgo5uXwone5SKcGhT1KEJMFEkMEWf9L",
-    "tokenName": "MegaSerum",
+    "name": "MegaSerum",
     "decimals": 0
   },
   {
-    "tokenSymbol": "WUSDC",
+    "symbol": "WUSDC",
     "mintAddress": "BXXkv6z8ykpG1yuvUDPgh732wzVHB69RnB9YgSYh3itW",
-    "tokenName": "Wrapped USDC",
+    "name": "Wrapped USDC",
     "decimals": 6
   },
   {
-    "tokenSymbol": "TOMO",
+    "symbol": "TOMO",
     "mintAddress": "GXMvfY2jpQctDqZ9RoU3oWPhufKiCcFEfchvYumtX7jd",
-    "tokenName": "Wrapped TOMO",
+    "name": "Wrapped TOMO",
     "decimals": 6
   },
   {
-    "tokenSymbol": "KARMA",
+    "symbol": "KARMA",
     "mintAddress": "EcqExpGNFBve2i1cMJUTR4bPXj4ZoqmDD2rTkeCcaTFX",
-    "tokenName": "Wrapped KARMA",
+    "name": "Wrapped KARMA",
     "decimals": 4
   },
   {
-    "tokenSymbol": "LUA",
+    "symbol": "LUA",
     "mintAddress": "EqWCKXfs3x47uVosDpTRgFniThL9Y8iCztJaapxbEaVX",
-    "tokenName": "Wrapped LUA",
+    "name": "Wrapped LUA",
     "decimals": 6
   },
   {
-    "tokenSymbol": "MATH",
+    "symbol": "MATH",
     "mintAddress": "GeDS162t9yGJuLEHPWXXGrb1zwkzinCgRwnT8vHYjKza",
-    "tokenName": "Wrapped MATH",
+    "name": "Wrapped MATH",
     "decimals": 6
   },
   {
-    "tokenSymbol": "KEEP",
+    "symbol": "KEEP",
     "mintAddress": "GUohe4DJUA5FKPWo3joiPgsB7yzer7LpDmt1Vhzy3Zht",
-    "tokenName": "Wrapped KEEP",
+    "name": "Wrapped KEEP",
     "decimals": 6
   },
   {
-    "tokenSymbol": "SWAG",
+    "symbol": "SWAG",
     "mintAddress": "9F9fNTT6qwjsu4X4yWYKZpsbw5qT7o6yR2i57JF2jagy",
-    "tokenName": "Wrapped SWAG",
+    "name": "Wrapped SWAG",
     "decimals": 6
   },
   {
-    "tokenSymbol": "FIDA",
+    "symbol": "FIDA",
     "mintAddress": "EchesyfXePKdLtoiZSL8pBe8Myagyy8ZRqsACNCFGnvp",
-    "tokenName": "Bonfida",
+    "name": "Bonfida",
     "decimals": 6
   },
   {
-    "tokenSymbol": "KIN",
+    "symbol": "KIN",
     "mintAddress": "kinXdEcpDQeHPEuQnqmUgtYykqKGVFq6CeVX5iAHJq6",
-    "tokenName": "KIN",
+    "name": "KIN",
     "decimals": 5
   },
   {
-    "tokenSymbol": "MAPS",
+    "symbol": "MAPS",
     "mintAddress": "MAPS41MDahZ9QdKXhVa4dWB9RuyfV4XqhyAZ8XcYepb",
-    "tokenName": "MAPS",
+    "name": "MAPS",
     "decimals": 6
   }
 ]
