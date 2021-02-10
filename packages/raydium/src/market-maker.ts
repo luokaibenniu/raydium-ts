@@ -33,7 +33,7 @@ export async function deposit(
     maxAmountB,
     tolerate,
   }: DepositParams,
-) {
+): Promise<string> {
   const instructions: TransactionInstruction[] = [];
   const cleanupInstructions: TransactionInstruction[] = [];
   const signers: Account[] = [];
