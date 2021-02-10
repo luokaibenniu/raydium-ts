@@ -8,14 +8,30 @@ export const TOKENS = {
   testnet: TESTNET_TOKENS,
 };
 
-export function getTokenBySymbol(symbol: string, env = 'mainnet') {
+interface TokenInfo {
+  symbol: string;
+  mintAddress: string;
+  name: string;
+  decimals: number;
+}
+
+export function getTokenBySymbol(
+  symbol: string,
+  env = 'mainnet',
+): TokenInfo | undefined {
   return TOKENS[env].find(token => token.symbol === symbol);
 }
 
-export function getTokenByName(name: string, env = 'mainnet') {
+export function getTokenByName(
+  name: string,
+  env = 'mainnet',
+): TokenInfo | undefined {
   return TOKENS[env].find(token => token.name === name);
 }
 
-export function getTokenByMintAddress(mintAddress: string, env = 'mainnet') {
+export function getTokenByMintAddress(
+  mintAddress: string,
+  env = 'mainnet',
+): TokenInfo | undefined {
   return TOKENS[env].find(token => token.mintAddress === mintAddress);
 }

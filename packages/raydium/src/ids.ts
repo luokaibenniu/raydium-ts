@@ -9,6 +9,28 @@ export const PROGRAM_IDS = {
   mainnet: new PublicKey('7mkSRhsJMnAGFngJxpJ52ikRa24TY53ZWKEjwJ4nyYGC'),
 };
 
+interface MarketInfo {
+  amm: PublicKey;
+  authority: PublicKey;
+
+  openOrders: PublicKey;
+
+  lpMintAddress: PublicKey;
+
+  poolTokenAccountA: PublicKey;
+  poolTokenAccountB: PublicKey;
+
+  market: PublicKey;
+
+  targetOrders: PublicKey;
+  quantities: PublicKey;
+  withdrawQueue: PublicKey;
+  poolTempLpAccount: PublicKey;
+  poolLpAccount: PublicKey;
+
+  nonce: number;
+}
+
 export const MARKET_PARAMS = {
   'SUSHI-USDT': {
     mainnet: {
@@ -43,15 +65,16 @@ export const MARKET_PARAMS = {
       poolLpAccount: new PublicKey(
         'DcC1Bhk9e53EqLESSZG8vLv6fsHoCvYwwppkoFUKuoCU',
       ),
+
       nonce: 255,
     },
   },
 };
 
-export function getProgramId(env = 'mainnet') {
+export function getProgramId(env = 'mainnet'): PublicKey {
   return PROGRAM_IDS[env];
 }
 
-export function getMarketParams(pair: string, env = 'mainnet') {
+export function getMarketParams(pair: string, env = 'mainnet'): MarketInfo {
   return MARKET_PARAMS[pair][env];
 }

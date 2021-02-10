@@ -18,9 +18,11 @@ export function depositInstruction(
   userTokenAccountB: PublicKey,
 
   poolLpAccount: PublicKey,
-  // user
-  tokenAccountOwnerA: PublicKey,
-  tokenAccountOwnerB: PublicKey,
+
+  // owner
+  tokenAccountOwner: PublicKey,
+
+  quantities: PublicKey,
 
   maxAmountA: number,
   maxAmountB: number,
@@ -45,8 +47,8 @@ export function depositInstruction(
     { pubkey: userTokenAccountA, isSigner: false, isWritable: true },
     { pubkey: userTokenAccountB, isSigner: false, isWritable: true },
     { pubkey: poolLpAccount, isSigner: false, isWritable: true },
-    { pubkey: tokenAccountOwnerA, isSigner: true, isWritable: true },
-    { pubkey: tokenAccountOwnerB, isSigner: true, isWritable: true },
+    { pubkey: tokenAccountOwner, isSigner: true, isWritable: true },
+    { pubkey: quantities, isSigner: false, isWritable: true },
   ];
 
   const data = Buffer.alloc(dataLayout.span);

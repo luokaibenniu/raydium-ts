@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import Wallet from '@project-serum/sol-wallet-adapter';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
-import { deposit } from '../../packages/raydium';
+import { MarketMaker } from '../../packages/raydium';
 
 function App() {
   const [logs, setLogs] = useState([]);
@@ -9,8 +9,9 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  // const network = clusterApiUrl('mainnet-beta');
-  const network = 'http://127.0.0.1:8899';
+  const network = clusterApiUrl('mainnet-beta');
+  // const network = clusterApiUrl('devnet');
+  // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
   const connection = useMemo(() => new Connection(network), [network]);
@@ -35,8 +36,8 @@ function App() {
     };
   }, [wallet]);
 
-  async function testDeposit() {
-    deposit(connection, wallet, {
+  async function deposit() {
+    MarketMaker.deposit(connection, wallet, {
       pairName: 'SUSHI-USDT',
       userTokenAccountA: new PublicKey(''),
       userTokenAccountB: new PublicKey(''),
@@ -56,7 +57,6 @@ function App() {
 
   return (
     <div className="App">
-      <h1>Demo</h1>
       <div>Network: {network}</div>
       <div>
         Waller provider:{' '}
@@ -70,7 +70,7 @@ function App() {
         <>
           <div>Wallet address: {wallet.publicKey.toBase58()}</div>
 
-          <button onClick={testDeposit}>Test Deposit</button>
+          <button onClick={deposit}>Deposit</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>
