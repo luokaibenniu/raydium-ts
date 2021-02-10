@@ -33,6 +33,7 @@ export async function deposit(
     maxAmountB,
     tolerate,
   }: DepositParams,
+  awaitConfirmation = true,
 ): Promise<string> {
   const instructions: TransactionInstruction[] = [];
   const cleanupInstructions: TransactionInstruction[] = [];
@@ -68,5 +69,6 @@ export async function deposit(
     wallet,
     instructions.concat(cleanupInstructions),
     signers,
+    awaitConfirmation,
   );
 }

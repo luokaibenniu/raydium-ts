@@ -38,12 +38,8 @@ function App() {
   async function testDeposit() {
     deposit(connection, wallet, {
       pairName: 'SUSHI-USDT',
-      userTokenAccountA: new PublicKey(
-        'GGTfg2voTdAJEtADP1uj5NgQdkzs16zyA7rLJESCrigv',
-      ),
-      userTokenAccountB: new PublicKey(
-        'AxxgcthBrTNz73VEnEKwY1QcmnSEjH8rANaE1TJTj7c6',
-      ),
+      userTokenAccountA: new PublicKey(''),
+      userTokenAccountB: new PublicKey(''),
       tokenAccountOwnerA: wallet.publicKey,
       tokenAccountOwnerB: wallet.publicKey,
       maxAmountA: 10,
