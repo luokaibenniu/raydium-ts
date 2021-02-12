@@ -6,67 +6,93 @@ export const TOKEN_PROGRAM_ID = new PublicKey(
 );
 
 export const PROGRAM_IDS = {
-  mainnet: new PublicKey('7mkSRhsJMnAGFngJxpJ52ikRa24TY53ZWKEjwJ4nyYGC'),
+  // mainnet: new PublicKey(''),
+  devnet: new PublicKey('8fStnEY7aYiUQFRu8bG9s2YjRAxa5U8TAdgcotkLmAbx'),
 };
 
 interface MarketInfo {
-  amm: PublicKey;
-  authority: PublicKey;
+  ammId: PublicKey;
+  ammAuthority: PublicKey;
 
-  openOrders: PublicKey;
+  ammOpenOrders: PublicKey;
 
   lpMintAddress: PublicKey;
 
-  poolTokenAccountA: PublicKey;
-  poolTokenAccountB: PublicKey;
+  poolCoinTokenAccount: PublicKey;
+  poolPcTokenAccount: PublicKey;
 
-  market: PublicKey;
+  serumProgramId: PublicKey;
+  serumMarket: PublicKey;
+  serumCoinVaultAccount: PublicKey;
+  serumPcVaultAccount: PublicKey;
+  serumVaultSigner: PublicKey;
 
-  targetOrders: PublicKey;
-  quantities: PublicKey;
-  withdrawQueue: PublicKey;
-  poolTempLpAccount: PublicKey;
-  poolLpAccount: PublicKey;
+  ammTargetOrders: PublicKey;
+  ammQuantities: PublicKey;
+  poolWithdrawQueue: PublicKey;
+  poolTempLpTokenAccount: PublicKey;
+  poolLpTokenAccount: PublicKey;
 
   nonce: number;
 }
 
 export const MARKET_PARAMS = {
   'SUSHI-USDT': {
-    mainnet: {
-      amm: new PublicKey('4zGmsWTRx9NCch54vMhAZ3SqWYqjgYJ38yzJGDXedfGD'),
-      authority: new PublicKey('5f1SAckvVPdCR3Y9GNTZf8YJFCCabMeKbJZjDhFMCDpM'),
+    devnet: {
+      ammId: new PublicKey('HwZr3BRkGGDqLDUzYUu869nr1tb33cNyZCE325PmnapD'),
+      ammAuthority: new PublicKey(
+        'D1akRVNqH5WfBCjGeZZM4ZaK4yZD8Zo8nFc8URRsvYnE',
+      ),
 
-      openOrders: new PublicKey('BMC84Rqb5ueVJM9QEewKVJkZKq5WWEV4bLrFrRkKEHPK'),
+      ammOpenOrders: new PublicKey(
+        '51cfRdGn7iL5rGBfWMSXhgcW7P53nRM6jqfk8gSisN7x',
+      ),
 
       lpMintAddress: new PublicKey(
-        'C5d9j6FPH6x2rRaf8FXxxChor7mg1XRAcDuEPrXLZGZb',
+        'BrSmMgxJMgUT9H2WxVUrp5rVum7V45tLemmccMYMGqhT',
       ),
 
-      poolTokenAccountA: new PublicKey(
-        'G8jLmjCkdtbUdMLiwaWy7fKgrsr9dMMyzpc7a4eMSxLU',
+      poolCoinTokenAccount: new PublicKey(
+        'HzFGTSE9gkKELoRD14cDiosvkoojdDXJ6hEMJZUtG1h3',
       ),
-      poolTokenAccountB: new PublicKey(
-        '8DmRtSevRDEBVrTBUHoW8v1rGyzacfQWdkNVbW9s9Y8Z',
-      ),
-
-      market: new PublicKey('4uZTPc72sCDcVRfKKii67dTPm2Xe4ri3TYnGcUQrtnU9'),
-
-      targetOrders: new PublicKey(
-        'CUXqaFx4e3Ci6crR8etzbaU7QF36gJuu4wAgaWwcp4Rd',
-      ),
-      quantities: new PublicKey('A3cJEEgwnRK8DT7C4YSEGYTJynzjTJxRz91XaECrB9xA'),
-      withdrawQueue: new PublicKey(
-        '8Dx9v8y2LPDiwUW3rUaFiT56rga2HyULWiavxh8vWKe',
-      ),
-      poolTempLpAccount: new PublicKey(
-        'FKEyf5np8PGKZEdSzQKWkjFwQRz8q4z6dLbg36n5AKbB',
-      ),
-      poolLpAccount: new PublicKey(
-        'DcC1Bhk9e53EqLESSZG8vLv6fsHoCvYwwppkoFUKuoCU',
+      poolPcTokenAccount: new PublicKey(
+        '39Tp9FQyjimXa9wqCC9nuCNefSfEbCWpJkovo5Pf5H9s',
       ),
 
-      nonce: 255,
+      // serum
+      serumProgramId: new PublicKey(
+        '9MVDeYQnJmN2Dt7H44Z8cob4bET2ysdNu2uFJcatDJno',
+      ),
+      serumMarket: new PublicKey(
+        '7UqmM6CNL65gaYg1RbZmJeqbqxQEmNWQzomGGpmRjjta',
+      ),
+      serumCoinVaultAccount: new PublicKey(
+        '3pbRRjaD6vvr6WdcLpaD74PoDYJ6mugZ4ppVHVzoWBVL',
+      ),
+      serumPcVaultAccount: new PublicKey(
+        'BGhg86aJVWP4ri3h7HuaW6p7vHXbMqjrhAgXC7iuezx9',
+      ),
+      serumVaultSigner: new PublicKey(
+        'E3zLE5hyyNqB8Ar2VQYmUv5xfTY6F9WLBGAkbeoCwiHw',
+      ),
+
+      ammTargetOrders: new PublicKey(
+        'BG94EMoNxGdT14e2FbJ1qv75JtTE9hxtdJ2YMFsF9D9k',
+      ),
+      ammQuantities: new PublicKey(
+        '9noYYi3YfijeFUZCUVmAephgoQsrtqdU8UqtHHDRdkWS',
+      ),
+      poolWithdrawQueue: new PublicKey(
+        'GmqwtoPaKkJRAkpNtiRdpovKmgYRhHexez1Tkfhudf3N',
+      ),
+      poolTempLpTokenAccount: new PublicKey(
+        '6vtYyPA8dE2bFmxrMARbXd5HXm9v7EBZMfXhgZg2qb56',
+      ),
+      poolLpTokenAccount: new PublicKey(
+        '5RCNyqFTKLpoQWtQQZPaY3DpfpEeXLym3PcGVszj9aRE',
+      ),
+
+      nonce: 254,
     },
   },
 };
