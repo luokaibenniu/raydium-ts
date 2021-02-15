@@ -19,6 +19,15 @@ import {
 } from './instructions';
 import { sendTransaction } from './transactions';
 
+/**
+ * Get trade pair name use two mint addresses string
+
+ * @param {string} mintAddressA
+ * @param {string} mintAddressB
+ * @param {string} [env='mainnet']
+
+ * @returns {string|null} pairName
+ */
 export function getPairNameFromMintAddresses(
   mintAddressA: string,
   mintAddressB: string,
@@ -208,6 +217,9 @@ export class MarketMaker {
     );
   }
 
+  /**
+   * Get this market maker infomations
+   */
   async getMarketMakerInfo() {
     const accountInfo = await this.connection.getAccountInfo(
       this.tradePairInfo.ammId,
@@ -224,6 +236,9 @@ export class MarketMaker {
     return marketMakerInfo;
   }
 
+  /**
+   * Get this pool unused balance
+   */
   async getPoolUnusedBalance() {
     const { poolCoinTokenAccount, poolPcTokenAccount } = this.marketMakerInfo;
 
@@ -240,6 +255,9 @@ export class MarketMaker {
     };
   }
 
+  /**
+   * Get this market maker's open orders
+   */
   async getOpenOrders() {
     const accountInfo = await this.connection.getAccountInfo(
       this.marketMakerInfo.ammOpenOrders,
@@ -264,6 +282,9 @@ export class MarketMaker {
     return { baseTokenTotal, quoteTokenTotal };
   }
 
+  /**
+   * Get this market maker's total balances
+   */
   async getPoolBalance() {
     const {
       unusedCoinBalance,

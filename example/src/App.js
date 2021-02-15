@@ -51,7 +51,7 @@ function App() {
       wallet.publicKey,
       10 * 1e6,
       170 * 1e6,
-      // percent 5000 / 10e6 = 0.0005
+      // percent 50 / 1e4 = 0.005
       50,
     )
       .then(txid => {
