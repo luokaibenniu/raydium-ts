@@ -22,6 +22,7 @@
     "test:watch": "jest --watch"
   },
   "dependencies": {
+    "@project-serum/serum": "^0.13.23",
     "@solana/web3.js": "0.86.1",
     "bn.js": "^5.1.2",
     "buffer-layout": "^1.2.0"
@@ -50,5 +51,6 @@
     "not dead",
     "not op_mini all",
     "maintained node versions"
-  ]
+  ],
+  "gitHead": "c7ef673ac7cb9a3c44b06f6c03efdd47d9de17da"
 }

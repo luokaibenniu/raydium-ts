@@ -1546,6 +1546,15 @@
   dependencies:
     "@types/node" ">= 8"
 
+"@project-serum/serum@^0.13.23":
+  version "0.13.23"
+  resolved "https://registry.yarnpkg.com/@project-serum/serum/-/serum-0.13.23.tgz#70a4206e3fe926ef2f6e41da1b562399a20b3c9d"
+  integrity sha512-Atg2sSdQLEp4JIg4jp3vy1T9u9O5wObVTcGe0hX7e7zDmDc4zxBbTJXxdvMRxaz4pfrETyithX//zIMyIHMA8Q==
+  dependencies:
+    "@solana/web3.js" "0.86.1"
+    bn.js "^5.1.2"
+    buffer-layout "^1.2.0"
+
 "@sinonjs/commons@^1.7.0":
   version "1.8.1"
   resolved "https://registry.yarnpkg.com/@sinonjs/commons/-/commons-1.8.1.tgz#e7df00f98a203324f6dc7cc606cad9d4a8ab2217"

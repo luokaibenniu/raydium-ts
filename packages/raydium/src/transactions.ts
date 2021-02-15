@@ -49,7 +49,7 @@ export async function sendTransaction(
     ).value;
 
     if (status?.err) {
-      throw status.err;
+      throw { txid: txid, err: status.err };
     }
   }
 
