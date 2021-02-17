@@ -51,6 +51,51 @@ const pools: PoolInfo[] = [
 
     nonce: 255,
   },
+  {
+    name: 'ETH-USDT',
+    coinMintAddress: Token.ETH.mintAddress,
+    pcMintAddress: Token.USDT.mintAddress,
+    lpMintAddress: new PublicKey('KY4XvwHy7JPzbWYAbk23jQvEb4qWJ8aCqYWREmk1Q7K'),
+
+    ammId: new PublicKey('7PGNXqdhrpQoVS5uQs9gjT1zfY6MUzEeYHopRnryj7rm'),
+    ammAuthority: new PublicKey('BFCEvcoD1xY1HK4psbC5wYXVXEvmgwg4wKggk89u1NWw'),
+    ammOpenOrders: new PublicKey(
+      '3QaSNxMuA9zEXazLdD2oJq7jUCfShgtvdaepuq1uJFnS',
+    ),
+    ammTargetOrders: new PublicKey(
+      '2exvd2T7yFYhBpi67XSrCVChVwMu23g653ELEnjvv8uu',
+    ),
+    ammQuantities: new PublicKey(
+      'BtwQvRXNudUrazbJNhazajSZXEXbrf51ddBrmnje27Li',
+    ),
+
+    poolCoinTokenAccount: new PublicKey(
+      'Gej1jXVRMdDKWSxmEZ78KJp5jruGJfR9dV3beedXe3BG',
+    ),
+    poolPcTokenAccount: new PublicKey(
+      'FUDEbQKfMTfAaKS3dGdPEacfcC9bRpa5gmmDW8KNoUKp',
+    ),
+    poolWithdrawQueue: new PublicKey(
+      '4q3qXQsQSvzNE1fSyEh249vHGttKfQPJWM7A3AtffEX5',
+    ),
+    poolTempLpTokenAccount: new PublicKey(
+      '8i2cZ1UCAjVac6Z76GvQeRqZMKgMyuoZQeNSsjdtEgHG',
+    ),
+
+    serumProgramId: SERUM_PROGRAM_ID_V2.mainnet,
+    serumMarket: new PublicKey('5abZGhrELnUnfM9ZUnvK6XJPoBU5eShZwfFPkdhAC7o'),
+    serumCoinVaultAccount: new PublicKey(
+      'Gwna45N1JGLmUMGhFVP1ELz8szVSajp12RgPqCbk46n7',
+    ),
+    serumPcVaultAccount: new PublicKey(
+      '8uqjWjNQiZvoieaGSoCRkGZExrqMpaYJL5huknCEHBcP',
+    ),
+    serumVaultSigner: new PublicKey(
+      '4fgnxw343cfYgcNgWvan8H6j6pNBskBmGX4XMbhxtFbi',
+    ),
+
+    nonce: 255,
+  },
 ];
 
 export default pools;
