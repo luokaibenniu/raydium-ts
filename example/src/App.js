@@ -1,11 +1,8 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import Wallet from '@project-serum/sol-wallet-adapter';
+import { Account, Pool, getTokenBySymbol } from '../../packages/raydium';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
-import {
-  MarketMaker,
-  getTokenAccountInfoByOwner,
-  getPairNameFromMintAddresses,
-} from '../../packages/raydium';
+import React, { useEffect, useMemo, useState } from 'react';
+
+import Wallet from '@project-serum/sol-wallet-adapter';
 
 function App() {
   const [logs, setLogs] = useState([]);
@@ -13,8 +10,8 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  // const network = clusterApiUrl('mainnet-beta');
-  const network = clusterApiUrl('devnet');
+  const network = clusterApiUrl('mainnet-beta');
+  // const network = clusterApiUrl('devnet');
   // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
@@ -26,7 +23,17 @@ function App() {
 
   const [, setConnected] = useState(false);
 
-  const mm = new MarketMaker(connection, wallet, 'SUSHI-USDT', 'devnet');
+  const link = getTokenBySymbol('LINK');
+  const usdt = getTokenBySymbol('USDT');
+  const pool = new Pool(
+    connection,
+    wallet,
+    link.mintAddress,
+    usdt.mintAddress,
+    'mainnet',
+  );
+
+  const account = new Account(connection, wallet);
 
   useEffect(() => {
     wallet.on('connect', () => {
@@ -42,74 +49,81 @@ function App() {
     };
   }, [wallet]);
 
-  // deposit two tokens to pools
-  async function deposit() {
-    mm.deposit(
-      new PublicKey('Ah2Z16vD6XsWohRF3cNckS9LNwtiWnKiRTywLPwgwP4z'),
-      new PublicKey('5ifxt1WkmtNXx5eN95eVL96j6Utn99xc4itnRwejso1u'),
-      new PublicKey('EiPuw5Q41mgB3eEHeaVszuh8rRFMMnzinBmMWFkakJgR'),
-      wallet.publicKey,
-      10 * 1e6,
-      170 * 1e6,
-      // percent 50 / 1e4 = 0.005
-      50,
-    )
+  // addLiquidity
+  async function addLiquidity() {
+    const coinTokenAccount = await account.getTokenAccountInfoByMint(
+      link.mintAddress,
+    );
+    const pcTokenAccount = await account.getTokenAccountInfoByMint(
+      usdt.mintAddress,
+    );
+
+    pool
+      .addLiquidity(
+        coinTokenAccount.address,
+        pcTokenAccount.address,
+        new PublicKey('ATVkbs8dhnFwAx5VVjYKUE78hpRFHuFPp7gtdz5XYmrY'),
+        wallet.publicKey,
+        0.1 * 10 ** link.decimals,
+        1 * 10 ** usdt.decimals,
+        // percent 50 / 1e4 = 0.005
+        50,
+      )
       .then(txid => {
         console.log(txid);
       })
       .catch(error => {
+        console.log(error);
         console.log(error.err);
         console.log(error.txid);
       });
   }
 
-  // withdraw two tokens from market marker pool
-  async function withdraw() {
-    mm.withdraw(
-      new PublicKey('9o1DwQ1SkDz7QxgsEonEpkpWMNKjS9H4hJ7W4m7Kyskt'),
-      new PublicKey('8pHgCuTiFGdWXpTkJL38niEXAypMULfBuWuLntUN7NcZ'),
-      new PublicKey('F7m458UPyb9KQmmRanvjpVLFTP5bnSLti1thMpKSMd1Z'),
-      wallet.publicKey,
-      1 * 1e6,
-    )
+  // removeLiquidity
+  async function removeLiquidity() {
+    const coinTokenAccount = await account.getTokenAccountInfoByMint(
+      link.mintAddress,
+    );
+    const pcTokenAccount = await account.getTokenAccountInfoByMint(
+      usdt.mintAddress,
+    );
+
+    pool
+      .removeLiquidity(
+        new PublicKey('ATVkbs8dhnFwAx5VVjYKUE78hpRFHuFPp7gtdz5XYmrY'),
+        coinTokenAccount.address,
+        pcTokenAccount.address,
+        wallet.publicKey,
+        1 * 1e6,
+      )
       .then(txid => {
         console.log(txid);
       })
       .catch(error => {
+        console.log(error);
         console.log(error.err);
         console.log(error.txid);
       });
   }
 
-  // get this market maker state info
-  async function getMarketMakerInfo() {
-    mm.getMarketMakerInfo().then(info => {
+  // get current wallet's all token accounts (wrapped)
+  async function getTokenAccountInfo() {
+    account.getTokenAccountInfo().then(info => {
       console.log(info);
     });
   }
 
-  // get current wallet's all token accounts (wrapped)
-  async function _getTokenAccountInfoByOwner() {
-    getTokenAccountInfoByOwner(connection, wallet.publicKey).then(info => {
+  async function getTokenAccountInfoByMint() {
+    account.getTokenAccountInfoByMint(usdt.mintAddress).then(info => {
       console.log(info);
     });
   }
 
   async function getPoolBalance() {
-    mm.getPoolBalance().then(balances => {
+    pool.getPoolBalance().then(balances => {
       const { coinBalance, pcBalance } = balances;
       console.log(coinBalance, pcBalance);
     });
-  }
-
-  function getPairByMint() {
-    const name = getPairNameFromMintAddresses(
-      'HxPJD6nnKkNVbg8WiEPvz8DotbhdcyG8oGiiGrX9wAgU',
-      'FvBG4eePCHCdhx9KtG61tf4NCQAYp97ars3Q29AJWUZL',
-      'devnet',
-    );
-
-    console.log(name);
   }
 
   return (
@@ -127,14 +141,14 @@ function App() {
         <>
           <div>Wallet address: {wallet.publicKey.toBase58()}</div>
 
-          <button onClick={deposit}>deposit</button>
-          <button onClick={withdraw}>withdraw</button>
-          <button onClick={getMarketMakerInfo}>getMarketMakerInfo</button>
-          <button onClick={_getTokenAccountInfoByOwner}>
-            getTokenAccountInfoByOwner
+          <button onClick={addLiquidity}>addLiquidity</button>
+          <button onClick={removeLiquidity}>removeLiquidity</button>
+
+          <button onClick={getTokenAccountInfo}>getTokenAccountInfo</button>
+          <button onClick={getTokenAccountInfoByMint}>
+            getTokenAccountInfoByMint
           </button>
           <button onClick={getPoolBalance}>getPoolBalance</button>
-          <button onClick={getPairByMint}>getPairByMint</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

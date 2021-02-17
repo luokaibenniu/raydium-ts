@@ -1,6 +1,8 @@
-import MAINNET_TOKENS from './mainnet.json';
-import DEVNET_TOKENS from './devnet.json';
-import TESTNET_TOKENS from './testnet.json';
+import DEVNET_TOKENS from './devnet';
+import MAINNET_TOKENS from './mainnet';
+import { PublicKey } from '@solana/web3.js';
+import TESTNET_TOKENS from './testnet';
+import { TokenInfo } from '../types';
 
 export const TOKENS = {
   mainnet: MAINNET_TOKENS,
@@ -8,30 +10,55 @@ export const TOKENS = {
   testnet: TESTNET_TOKENS,
 };
 
-interface TokenInfo {
-  symbol: string;
-  mintAddress: string;
-  name: string;
-  decimals: number;
-}
+/**
+ * Get token use symbol
 
+ * @param {string} symbol
+ * @param {string} [env='mainnet']
+
+ * @returns {TokenInfo|undefined} tokenInfo
+ */
 export function getTokenBySymbol(
   symbol: string,
   env = 'mainnet',
 ): TokenInfo | undefined {
-  return TOKENS[env].find(token => token.symbol === symbol);
+  const token = TOKENS[env][symbol];
+
+  if (token) {
+    token['symbol'] = symbol;
+  }
+
+  return token;
 }
 
-export function getTokenByName(
-  name: string,
-  env = 'mainnet',
-): TokenInfo | undefined {
-  return TOKENS[env].find(token => token.name === name);
-}
+/**
+ * Get token use mint addresses
 
+ * @param {string | PublicKey} mintAddress
+ * @param {string} [env='mainnet']
+
+ * @returns {TokenInfo | undefined} tokenInfo
+ */
 export function getTokenByMintAddress(
-  mintAddress: string,
+  mintAddress: string | PublicKey,
   env = 'mainnet',
 ): TokenInfo | undefined {
-  return TOKENS[env].find(token => token.mintAddress === mintAddress);
+  let mint = mintAddress;
+
+  if (mint instanceof PublicKey) {
+    mint = mint.toBase58();
+  }
+
+  let token;
+
+  for (const symbol of Object.keys(TOKENS[env])) {
+    const info = TOKENS[env][symbol];
+
+    if (info.mintAddress.toBase58() === mintAddress) {
+      token = info;
+      token['symbol'] = symbol;
+    }
+  }
+
+  return token;
 }
