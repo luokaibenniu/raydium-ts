@@ -17,4 +17,5 @@ export const LIQUIDITY_POOL_PROGRAM_IDS = {
 export const STAKE_PROGRAM_IDS = {
   // mainnet: new PublicKey('RVKd61ztZW9GUwhRbbLoYVRE5Xf1B2tVscKqwZqXgEr'),
   // devnet: new PublicKey('6PUttG2hA9VLJje28T2LmvP1vcE2iUayHQCiv1m4Xytk'),
+  testnet: new PublicKey('GaB2BKGPefabDCvZZxjHCf56JHaGb2PjkrAFDp6wcT8d'),
 };

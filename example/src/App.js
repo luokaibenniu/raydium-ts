@@ -1,4 +1,9 @@
-import { Account, Pool, getTokenBySymbol } from '../../packages/raydium';
+import {
+  Account,
+  Liquidity,
+  Staking,
+  getTokenBySymbol,
+} from '../../packages/raydium';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
 import React, { useEffect, useMemo, useState } from 'react';
 
@@ -10,8 +15,9 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  const network = clusterApiUrl('mainnet-beta');
+  // const network = clusterApiUrl('mainnet-beta');
   // const network = clusterApiUrl('devnet');
+  const network = clusterApiUrl('testnet');
   // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
@@ -25,12 +31,19 @@ function App() {
 
   const link = getTokenBySymbol('LINK');
   const usdt = getTokenBySymbol('USDT');
-  const pool = new Pool(
+  const liquidity = new Liquidity(
     connection,
     wallet,
     link.mintAddress,
     usdt.mintAddress,
     'mainnet',
+  );
+
+  const staking = new Staking(
+    connection,
+    wallet,
+    'FeFagq8SEK9W3Z2DJ7mNFiKMvEoTTS5STQFSVh1q98jA',
+    'testnet',
   );
 
   const account = new Account(connection, wallet);
@@ -58,7 +71,7 @@ function App() {
       usdt.mintAddress,
     );
 
-    pool
+    liquidity
       .addLiquidity(
         coinTokenAccount.address,
         pcTokenAccount.address,
@@ -88,7 +101,7 @@ function App() {
       usdt.mintAddress,
     );
 
-    pool
+    liquidity
       .removeLiquidity(
         new PublicKey('ATVkbs8dhnFwAx5VVjYKUE78hpRFHuFPp7gtdz5XYmrY'),
         coinTokenAccount.address,
@@ -120,15 +133,45 @@ function App() {
   }
 
   async function getAmmInfo() {
-    pool.getAmmInfo().then(info => {
+    liquidity.getAmmInfo().then(info => {
       console.log(info);
     });
   }
 
   async function getPoolBalance() {
-    pool.getPoolBalance().then(balances => {
+    liquidity.getPoolBalance().then(balances => {
       const { coin, pc } = balances;
       console.log(coin, pc);
+    });
+  }
+
+  async function stakingDeposit() {
+    staking
+      .deposit(
+        new PublicKey('9M4KCH4fFSrg4C6roBD7hfeQhm7kwKvkCBYQWFdZHSa4'),
+        new PublicKey('8gQ3qMSQ6xCjoh2V1jcZ9BDVDWmHJ8sAL7EpGfYVNCaP'),
+        1,
+      )
+      .then(info => {
+        console.log(info);
+      });
+  }
+
+  async function stakingWithdraw() {
+    staking
+      .withdraw(
+        new PublicKey('9M4KCH4fFSrg4C6roBD7hfeQhm7kwKvkCBYQWFdZHSa4'),
+        new PublicKey('8gQ3qMSQ6xCjoh2V1jcZ9BDVDWmHJ8sAL7EpGfYVNCaP'),
+        1,
+      )
+      .then(info => {
+        console.log(info);
+      });
+  }
+
+  async function getUserInfoAccount() {
+    staking.getUserInfoAccount().then(info => {
+      console.log(info);
     });
   }
 
@@ -157,6 +200,12 @@ function App() {
 
           <button onClick={getAmmInfo}>getAmmInfo</button>
           <button onClick={getPoolBalance}>getPoolBalance</button>
+
+          <hr />
+
+          <button onClick={getUserInfoAccount}>getUserInfoAccount</button>
+          <button onClick={stakingDeposit}>stakingDeposit</button>
+          <button onClick={stakingWithdraw}>stakingWithdraw</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

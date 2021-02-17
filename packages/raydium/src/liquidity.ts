@@ -23,7 +23,7 @@ import { sendTransaction } from './transactions';
  * @param {string | PublicKey} pcMintAddress
  * @param {string} [env='mainnet']
  */
-export class Pool {
+export class Liquidity {
   private connection: Connection;
   private wallet: any;
 
@@ -354,7 +354,7 @@ export class Pool {
   async getAmmInfo() {
     const info = await this.connection.getAccountInfo(this.poolInfo.ammId);
 
-    return Pool.AmmInfoLayout.decode(info?.data);
+    return Liquidity.AmmInfoLayout.decode(info?.data);
   }
 
   /**
