@@ -4,7 +4,7 @@ import {
   PublicKey,
   TransactionInstruction,
 } from '@solana/web3.js';
-import { PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
+import { LIQUIDITY_POOL_PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
 import { nu64, struct, u8 } from 'buffer-layout';
 
 import { OpenOrders } from '@project-serum/serum';
@@ -51,11 +51,11 @@ export class Pool {
 
     this.account = new SolAccount(connection, SolAccount);
 
-    this.programId = PROGRAM_IDS[env];
+    this.programId = LIQUIDITY_POOL_PROGRAM_IDS[env];
     this.poolInfo = poolInfo;
   }
 
-  static PoolInfoLayout = struct([
+  static AmmInfoLayout = struct([
     nu64('status'),
     nu64('nonce'),
     nu64('orderNum'),
@@ -351,6 +351,12 @@ export class Pool {
     });
   }
 
+  async getAmmInfo() {
+    const info = await this.connection.getAccountInfo(this.poolInfo.ammId);
+
+    return Pool.AmmInfoLayout.decode(info?.data);
+  }
+
   /**
    * Get this liquidity pool unused balance
    */
@@ -365,8 +371,14 @@ export class Pool {
     );
 
     return {
-      unusedCoinBalance: parseInt(poolCoinInfo.value.amount),
-      unusedPcBalance: parseInt(poolPcInfo.value.amount),
+      unusedCoin: {
+        balance: parseInt(poolCoinInfo.value.amount),
+        decimals: poolCoinInfo.value.decimals,
+      },
+      unusedPc: {
+        balance: parseInt(poolPcInfo.value.amount),
+        decimals: poolPcInfo.value.decimals,
+      },
     };
   }
 
@@ -401,16 +413,24 @@ export class Pool {
    * Get this liquidity pool's total balances
    */
   async getPoolBalance() {
-    const {
-      unusedCoinBalance,
-      unusedPcBalance,
-    } = await this.getUnusedBalance();
+    const { unusedCoin, unusedPc } = await this.getUnusedBalance();
 
     const { baseTokenTotal, quoteTokenTotal } = await this.getOpenOrders();
 
-    const coinBalance = unusedCoinBalance + baseTokenTotal;
-    const pcBalance = unusedPcBalance + quoteTokenTotal;
+    const { needTakePnlCoin, needTakePnlPc } = await this.getAmmInfo();
 
-    return { coinBalance, pcBalance };
+    const coinBalance = unusedCoin.balance + baseTokenTotal - needTakePnlCoin;
+    const pcBalance = unusedPc.balance + quoteTokenTotal - needTakePnlPc;
+
+    const coin = {
+      balance: coinBalance,
+      decimals: unusedCoin.decimals,
+    };
+    const pc = {
+      balance: pcBalance,
+      decimals: unusedPc.decimals,
+    };
+
+    return { coin, pc };
   }
 }

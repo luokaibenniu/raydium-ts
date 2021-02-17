@@ -11,13 +11,14 @@ export interface PoolInfo {
   name: string;
   coinMintAddress: PublicKey;
   pcMintAddress: PublicKey;
+  lpMintAddress: PublicKey;
 
   ammId: PublicKey;
   ammAuthority: PublicKey;
   ammOpenOrders: PublicKey;
   ammTargetOrders: PublicKey;
   ammQuantities: PublicKey;
-  lpMintAddress: PublicKey;
+
   poolCoinTokenAccount: PublicKey;
   poolPcTokenAccount: PublicKey;
   poolWithdrawQueue: PublicKey;

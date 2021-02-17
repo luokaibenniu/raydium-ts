@@ -1,6 +1,6 @@
 import { PoolInfo } from '../types';
 import { PublicKey } from '@solana/web3.js';
-import { SERUM_PROGRAM_ID_V2 } from '../ids';
+import { SERUM_PROGRAM_IDS_V2 } from '../ids';
 import Token from '../tokens/mainnet';
 
 const pools: PoolInfo[] = [
@@ -37,7 +37,7 @@ const pools: PoolInfo[] = [
       'EL8G5U28xw9djiEb9AZiEtBUtUdA5YtvaAHJu5hxipCK',
     ),
 
-    serumProgramId: SERUM_PROGRAM_ID_V2.mainnet,
+    serumProgramId: SERUM_PROGRAM_IDS_V2.mainnet,
     serumMarket: new PublicKey('hBswhpNyz4m5nt4KwtCA7jYXvh7VmyZ4TuuPmpaKQb1'),
     serumCoinVaultAccount: new PublicKey(
       '8ZP84HpFb5k4paAgDGgXaMtne537LDFaxEWP89WKBPD1',
@@ -82,7 +82,7 @@ const pools: PoolInfo[] = [
       '8i2cZ1UCAjVac6Z76GvQeRqZMKgMyuoZQeNSsjdtEgHG',
     ),
 
-    serumProgramId: SERUM_PROGRAM_ID_V2.mainnet,
+    serumProgramId: SERUM_PROGRAM_IDS_V2.mainnet,
     serumMarket: new PublicKey('5abZGhrELnUnfM9ZUnvK6XJPoBU5eShZwfFPkdhAC7o'),
     serumCoinVaultAccount: new PublicKey(
       'Gwna45N1JGLmUMGhFVP1ELz8szVSajp12RgPqCbk46n7',

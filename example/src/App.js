@@ -119,10 +119,16 @@ function App() {
     });
   }
 
+  async function getAmmInfo() {
+    pool.getAmmInfo().then(info => {
+      console.log(info);
+    });
+  }
+
   async function getPoolBalance() {
     pool.getPoolBalance().then(balances => {
-      const { coinBalance, pcBalance } = balances;
-      console.log(coinBalance, pcBalance);
+      const { coin, pc } = balances;
+      console.log(coin, pc);
     });
   }
 
@@ -148,6 +154,8 @@ function App() {
           <button onClick={getTokenAccountInfoByMint}>
             getTokenAccountInfoByMint
           </button>
+
+          <button onClick={getAmmInfo}>getAmmInfo</button>
           <button onClick={getPoolBalance}>getPoolBalance</button>
         </>
       ) : (
