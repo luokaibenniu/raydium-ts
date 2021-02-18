@@ -16,9 +16,9 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  const network = clusterApiUrl('mainnet-beta');
+  // const network = clusterApiUrl('mainnet-beta');
   // const network = clusterApiUrl('devnet');
-  // const network = clusterApiUrl('testnet');
+  const network = clusterApiUrl('testnet');
   // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
@@ -34,27 +34,31 @@ function App() {
   const usdt = getTokenBySymbol('USDT');
 
   let liquidity;
-  Liquidity.load(
-    connection,
-    wallet,
-    link.mintAddress,
-    usdt.mintAddress,
-    'mainnet',
-  ).then(_liquidity => {
-    liquidity = _liquidity;
-    console.log(liquidity);
-  });
+  // Liquidity.load(
+  //   connection,
+  //   wallet,
+  //   link.mintAddress,
+  //   usdt.mintAddress,
+  //   'mainnet',
+  // ).then(_liquidity => {
+  //   liquidity = _liquidity;
+  //   console.log(liquidity);
+  // });
 
-  const staking = new Staking(
+  let staking = Staking.load(
     connection,
     wallet,
     'FeFagq8SEK9W3Z2DJ7mNFiKMvEoTTS5STQFSVh1q98jA',
     'testnet',
-  );
+  ).then(_staking => {
+    staking = _staking;
+    console.log(_staking);
+  });
 
   const account = new Account(connection, wallet);
 
-  const swap = new Swap(connection, wallet, 'testnet');
+  let swap;
+  // const swap = new Swap(connection, wallet, 'testnet');
 
   useEffect(() => {
     wallet.on('connect', () => {
@@ -160,6 +164,8 @@ function App() {
   async function stakingDeposit() {
     staking
       .deposit(
+        connection,
+        wallet,
         new PublicKey('9M4KCH4fFSrg4C6roBD7hfeQhm7kwKvkCBYQWFdZHSa4'),
         new PublicKey('8gQ3qMSQ6xCjoh2V1jcZ9BDVDWmHJ8sAL7EpGfYVNCaP'),
         1,
@@ -172,6 +178,8 @@ function App() {
   async function stakingWithdraw() {
     staking
       .withdraw(
+        connection,
+        wallet,
         new PublicKey('9M4KCH4fFSrg4C6roBD7hfeQhm7kwKvkCBYQWFdZHSa4'),
         new PublicKey('8gQ3qMSQ6xCjoh2V1jcZ9BDVDWmHJ8sAL7EpGfYVNCaP'),
         1,
@@ -182,31 +190,31 @@ function App() {
   }
 
   async function getUserInfoAccount() {
-    staking.getUserInfoAccount().then(info => {
+    staking.getUserInfoAccount(connection, wallet).then(info => {
       console.log(info);
     });
   }
 
   async function getUserInfo() {
-    staking.getUserInfo().then(info => {
+    staking.getUserInfo(connection, wallet).then(info => {
       console.log(info);
     });
   }
 
   async function getStakeInfo() {
-    staking.getStakeInfo().then(info => {
+    staking.getStakeInfo(connection).then(info => {
       console.log(info);
     });
   }
 
   async function getPoolInfo() {
-    staking.getPoolInfo().then(info => {
+    staking.getPoolInfo(connection).then(info => {
       console.log(info);
     });
   }
 
   async function getPendingReward() {
-    staking.getPendingReward().then(info => {
+    staking.getPendingReward(connection, wallet).then(info => {
       console.log(info);
     });
   }

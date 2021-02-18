@@ -9,9 +9,11 @@ import {
 import { STAKE_PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
 import { getFilteredProgramAccounts, sendTransaction } from './transactions';
 import { nu64, struct, u8 } from 'buffer-layout';
+import { throwIfNull, throwIfUndefined } from './errors';
 
 import { FarmInfo } from './types';
 import { getFarmByLpMintAddress } from './farms';
+import { getMintDecimals } from './web3';
 import { publicKeyLayout } from './layouts';
 
 /**
@@ -23,33 +25,65 @@ import { publicKeyLayout } from './layouts';
  * @param {string} [env='mainnet']
  */
 export class Staking {
-  private connection: Connection;
-  private wallet: any;
-
   private programId: PublicKey;
 
-  public poolInfo: FarmInfo;
+  private farmInfo: FarmInfo;
+  private decoded: any;
+
+  lpDecimals: number;
+  rewardDecimals: number;
 
   constructor(
+    programId: PublicKey,
+    farmInfo: FarmInfo,
+    decoded: any,
+    lpDecimals: number,
+    rewardDecimals: number,
+  ) {
+    this.programId = programId;
+
+    this.farmInfo = farmInfo;
+    this.decoded = decoded;
+
+    this.lpDecimals = lpDecimals;
+    this.rewardDecimals = rewardDecimals;
+  }
+
+  static async load(
     connection: Connection,
     wallet: any,
     lpMintAddress: string | PublicKey,
     env = 'mainnet',
   ) {
-    const poolInfo = getFarmByLpMintAddress(lpMintAddress, env);
+    const farmInfo = throwIfUndefined(
+      getFarmByLpMintAddress(lpMintAddress, env),
+      'Staking pool not found',
+    );
 
-    if (!poolInfo) {
-      throw new Error('Invalid staking pool');
-    }
+    const { data } = throwIfNull(
+      await connection.getAccountInfo(farmInfo.poolId),
+      'Staking pool not found',
+    );
 
-    this.connection = connection;
-    this.wallet = wallet;
+    const decoded = this.StakeInfoLayout.decode(data);
 
-    this.programId = STAKE_PROGRAM_IDS[env];
-    this.poolInfo = poolInfo;
+    const [lpDecimals, rewardDecimals] = await Promise.all([
+      getMintDecimals(connection, farmInfo.lpMintAddress),
+      getMintDecimals(connection, farmInfo.rewardMintAddress),
+    ]);
+
+    const programId = STAKE_PROGRAM_IDS[env];
+
+    return new Staking(
+      programId,
+      farmInfo,
+      decoded,
+      lpDecimals,
+      rewardDecimals,
+    );
   }
 
-  static StakePoolInfoLayout = struct([
+  static StakeInfoLayout = struct([
     nu64('state'),
     nu64('nonce'),
     publicKeyLayout('poolLpTokenAccount'),
@@ -72,18 +106,18 @@ export class Staking {
     nu64('rewardDebt'),
   ]);
 
-  async getUserInfoAccount() {
+  async getUserInfoAccount(connection: Connection, wallet: any) {
     const filters = [
       {
         memcmp: {
           offset: 8,
-          bytes: this.poolInfo.poolId.toBase58(),
+          bytes: this.farmInfo.poolId.toBase58(),
         },
       },
       {
         memcmp: {
           offset: 40,
-          bytes: this.wallet.publicKey.toBase58(),
+          bytes: wallet.publicKey.toBase58(),
         },
       },
       {
@@ -92,7 +126,7 @@ export class Staking {
     ];
 
     return await getFilteredProgramAccounts(
-      this.connection,
+      connection,
       this.programId,
       filters,
     );
@@ -109,6 +143,8 @@ export class Staking {
    * @returns {string} txid
    */
   async deposit(
+    connection: Connection,
+    wallet: any,
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
     amount: number,
@@ -119,7 +155,7 @@ export class Staking {
     const cleanupInstructions: TransactionInstruction[] = [];
     const signers: Account[] = [];
 
-    const userInfoAccounts = await this.getUserInfoAccount();
+    const userInfoAccounts = await this.getUserInfoAccount(connection, wallet);
     let userInfoAccount;
     let isNew = false;
 
@@ -130,9 +166,9 @@ export class Staking {
 
       instructions.push(
         await SystemProgram.createAccount({
-          fromPubkey: this.wallet.publicKey,
+          fromPubkey: wallet.publicKey,
           newAccountPubkey: newUserInfoAccount.publicKey,
-          lamports: await this.connection.getMinimumBalanceForRentExemption(
+          lamports: await connection.getMinimumBalanceForRentExemption(
             Staking.UserInfoLayout.span,
           ),
           space: Staking.UserInfoLayout.span,
@@ -148,22 +184,22 @@ export class Staking {
     instructions.push(
       this.depositInstruction(
         this.programId,
-        this.poolInfo.poolId,
-        this.poolInfo.poolAuthority,
+        this.farmInfo.poolId,
+        this.farmInfo.poolAuthority,
         userInfoAccount,
-        this.wallet.publicKey,
+        wallet.publicKey,
         userLpTokenAccount,
-        this.poolInfo.poolLpTokenAccount,
+        this.farmInfo.poolLpTokenAccount,
         userRewardTokenAccount,
-        this.poolInfo.poolRewardTokenAccount,
+        this.farmInfo.poolRewardTokenAccount,
         amount,
         isNew,
       ),
     );
 
     return await sendTransaction(
-      this.connection,
-      this.wallet,
+      connection,
+      wallet,
       instructions.concat(cleanupInstructions),
       signers,
       awaitConfirmation,
@@ -228,6 +264,8 @@ export class Staking {
    * @returns {string} txid
    */
   async withdraw(
+    connection: Connection,
+    wallet: any,
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
     amount: number,
@@ -238,27 +276,27 @@ export class Staking {
     const cleanupInstructions: TransactionInstruction[] = [];
     const signers: Account[] = [];
 
-    const userInfoAccounts = await this.getUserInfoAccount();
+    const userInfoAccounts = await this.getUserInfoAccount(connection, wallet);
     const userInfoAccount = userInfoAccounts[0].publicKey;
 
     instructions.push(
       this.withdrawInstruction(
         this.programId,
-        this.poolInfo.poolId,
-        this.poolInfo.poolAuthority,
+        this.farmInfo.poolId,
+        this.farmInfo.poolAuthority,
         userInfoAccount,
-        this.wallet.publicKey,
+        wallet.publicKey,
         userLpTokenAccount,
-        this.poolInfo.poolLpTokenAccount,
+        this.farmInfo.poolLpTokenAccount,
         userRewardTokenAccount,
-        this.poolInfo.poolRewardTokenAccount,
+        this.farmInfo.poolRewardTokenAccount,
         amount,
       ),
     );
 
     return await sendTransaction(
-      this.connection,
-      this.wallet,
+      connection,
+      wallet,
       instructions.concat(cleanupInstructions),
       signers,
       awaitConfirmation,
@@ -311,17 +349,17 @@ export class Staking {
     });
   }
 
-  async getStakeInfo() {
-    const info = await this.connection.getAccountInfo(this.poolInfo.poolId);
+  async getStakeInfo(connection: Connection) {
+    const info = await connection.getAccountInfo(this.farmInfo.poolId);
 
-    return Staking.StakePoolInfoLayout.decode(info?.data);
+    return Staking.StakeInfoLayout.decode(info?.data);
   }
 
   /**
    * Get user stake info
    */
-  async getUserInfo() {
-    const userInfoAccounts = await this.getUserInfoAccount();
+  async getUserInfo(connection: Connection, wallet: any) {
+    const userInfoAccounts = await this.getUserInfoAccount(connection, wallet);
 
     return Staking.UserInfoLayout.decode(userInfoAccounts[0].accountInfo.data);
   }
@@ -329,35 +367,26 @@ export class Staking {
   /**
    * Get staking pool info
    */
-  async getPoolInfo() {
-    const stakeInfo = await this.getStakeInfo();
-    const stakeLpInfo = await this.connection.getTokenAccountBalance(
-      this.poolInfo.poolLpTokenAccount,
-    );
-    const rewardInfo = await this.connection.getTokenAccountBalance(
-      this.poolInfo.poolRewardTokenAccount,
+  async getPoolInfo(connection: Connection) {
+    const stakeInfo = await this.getStakeInfo(connection);
+    const stakeLpInfo = await connection.getTokenAccountBalance(
+      this.farmInfo.poolLpTokenAccount,
     );
 
     const { rewardPerBlock } = stakeInfo;
 
     return {
-      reward: {
-        perBlock: rewardPerBlock,
-        decimals: rewardInfo.value.decimals,
-      },
-      lp: {
-        balance: parseInt(stakeLpInfo.value.amount),
-        decimals: stakeLpInfo.value.decimals,
-      },
+      rewardPerBlock,
+      lpBalance: parseInt(stakeLpInfo.value.amount),
     };
   }
 
   /**
    * Get user pending reward
    */
-  async getPendingReward() {
-    const stakeInfo = await this.getStakeInfo();
-    const userInfo = await this.getUserInfo();
+  async getPendingReward(connection: Connection, wallet: any) {
+    const stakeInfo = await this.getStakeInfo(connection);
+    const userInfo = await this.getUserInfo(connection, wallet);
 
     const { rewardPerShareNet } = stakeInfo;
     const { rewardDebt, depositBalance } = userInfo;
