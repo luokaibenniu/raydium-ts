@@ -175,6 +175,30 @@ function App() {
     });
   }
 
+  async function getUserInfo() {
+    staking.getUserInfo().then(info => {
+      console.log(info);
+    });
+  }
+
+  async function getStakeInfo() {
+    staking.getStakeInfo().then(info => {
+      console.log(info);
+    });
+  }
+
+  async function getPoolInfo() {
+    staking.getPoolInfo().then(info => {
+      console.log(info);
+    });
+  }
+
+  async function getPendingReward() {
+    staking.getPendingReward().then(info => {
+      console.log(info);
+    });
+  }
+
   return (
     <div className="App">
       <div>Network: {network}</div>
@@ -204,8 +228,12 @@ function App() {
           <hr />
 
           <button onClick={getUserInfoAccount}>getUserInfoAccount</button>
+          <button onClick={getUserInfo}>getUserInfo</button>
           <button onClick={stakingDeposit}>stakingDeposit</button>
           <button onClick={stakingWithdraw}>stakingWithdraw</button>
+          <button onClick={getStakeInfo}>getStakeInfo</button>
+          <button onClick={getPoolInfo}>getPoolInfo</button>
+          <button onClick={getPendingReward}>getPendingReward</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

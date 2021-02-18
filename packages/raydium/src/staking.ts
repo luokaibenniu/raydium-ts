@@ -14,6 +14,14 @@ import { FarmInfo } from './types';
 import { getFarmByLpMintAddress } from './farms';
 import { publicKeyLayout } from './layouts';
 
+/**
+ * Staking pool
+ * @constructor
+ * @param {Connection} connection
+ * @param {any} wallet
+ * @param {string | PublicKey} lpMintAddress
+ * @param {string} [env='mainnet']
+ */
 export class Staking {
   private connection: Connection;
   private wallet: any;
@@ -41,7 +49,22 @@ export class Staking {
     this.poolInfo = poolInfo;
   }
 
-  static StakeInfoLayout = struct([
+  static StakePoolInfoLayout = struct([
+    nu64('state'),
+    nu64('nonce'),
+    publicKeyLayout('poolLpTokenAccount'),
+    publicKeyLayout('poolRewardTokenAccount'),
+    publicKeyLayout('owner'),
+    publicKeyLayout('feeOwner'),
+    nu64('feeY'),
+    nu64('feeX'),
+    nu64('totalReward'),
+    nu64('rewardPerShareNet'),
+    nu64('lastBlock'),
+    nu64('rewardPerBlock'),
+  ]);
+
+  static UserInfoLayout = struct([
     nu64('state'),
     publicKeyLayout('poolId'),
     publicKeyLayout('stakerOwner'),
@@ -64,7 +87,7 @@ export class Staking {
         },
       },
       {
-        dataSize: Staking.StakeInfoLayout.span,
+        dataSize: Staking.UserInfoLayout.span,
       },
     ];
 
@@ -75,6 +98,16 @@ export class Staking {
     );
   }
 
+  /**
+   * Deposit lp token to staking pool
+
+   * @param {PublicKey} userLpTokenAccount
+   * @param {PublicKey} userRewardTokenAccount
+   * @param {number} amount
+   * @param {boolean} [awaitConfirmation=true]
+
+   * @returns {string} txid
+   */
   async deposit(
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
@@ -100,9 +133,9 @@ export class Staking {
           fromPubkey: this.wallet.publicKey,
           newAccountPubkey: newUserInfoAccount.publicKey,
           lamports: await this.connection.getMinimumBalanceForRentExemption(
-            Staking.StakeInfoLayout.span,
+            Staking.UserInfoLayout.span,
           ),
-          space: Staking.StakeInfoLayout.span,
+          space: Staking.UserInfoLayout.span,
           programId: this.programId,
         }),
       );
@@ -184,6 +217,16 @@ export class Staking {
     });
   }
 
+  /**
+   * Withdraw lp token from staking pool
+
+   * @param {PublicKey} userLpTokenAccount
+   * @param {PublicKey} userRewardTokenAccount
+   * @param {number} amount
+   * @param {boolean} [awaitConfirmation=true]
+
+   * @returns {string} txid
+   */
   async withdraw(
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
@@ -266,5 +309,59 @@ export class Staking {
       programId,
       data,
     });
+  }
+
+  async getStakeInfo() {
+    const info = await this.connection.getAccountInfo(this.poolInfo.poolId);
+
+    return Staking.StakePoolInfoLayout.decode(info?.data);
+  }
+
+  /**
+   * Get user stake info
+   */
+  async getUserInfo() {
+    const userInfoAccounts = await this.getUserInfoAccount();
+
+    return Staking.UserInfoLayout.decode(userInfoAccounts[0].accountInfo.data);
+  }
+
+  /**
+   * Get staking pool info
+   */
+  async getPoolInfo() {
+    const stakeInfo = await this.getStakeInfo();
+    const stakeLpInfo = await this.connection.getTokenAccountBalance(
+      this.poolInfo.poolLpTokenAccount,
+    );
+    const rewardInfo = await this.connection.getTokenAccountBalance(
+      this.poolInfo.poolRewardTokenAccount,
+    );
+
+    const { rewardPerBlock } = stakeInfo;
+
+    return {
+      reward: {
+        perBlock: rewardPerBlock,
+        decimals: rewardInfo.value.decimals,
+      },
+      lp: {
+        balance: parseInt(stakeLpInfo.value.amount),
+        decimals: stakeLpInfo.value.decimals,
+      },
+    };
+  }
+
+  /**
+   * Get user pending reward
+   */
+  async getPendingReward() {
+    const stakeInfo = await this.getStakeInfo();
+    const userInfo = await this.getUserInfo();
+
+    const { rewardPerShareNet } = stakeInfo;
+    const { rewardDebt, depositBalance } = userInfo;
+
+    return (depositBalance * rewardPerShareNet) / 1e9 - rewardDebt;
   }
 }
