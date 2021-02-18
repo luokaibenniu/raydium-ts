@@ -2,6 +2,7 @@ import {
   Account,
   Liquidity,
   Staking,
+  Swap,
   getTokenBySymbol,
 } from '../../packages/raydium';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
@@ -15,9 +16,9 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  // const network = clusterApiUrl('mainnet-beta');
+  const network = clusterApiUrl('mainnet-beta');
   // const network = clusterApiUrl('devnet');
-  const network = clusterApiUrl('testnet');
+  // const network = clusterApiUrl('testnet');
   // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
@@ -31,13 +32,18 @@ function App() {
 
   const link = getTokenBySymbol('LINK');
   const usdt = getTokenBySymbol('USDT');
-  const liquidity = new Liquidity(
+
+  let liquidity;
+  Liquidity.load(
     connection,
     wallet,
     link.mintAddress,
     usdt.mintAddress,
     'mainnet',
-  );
+  ).then(_liquidity => {
+    liquidity = _liquidity;
+    console.log(liquidity);
+  });
 
   const staking = new Staking(
     connection,
@@ -47,6 +53,8 @@ function App() {
   );
 
   const account = new Account(connection, wallet);
+
+  const swap = new Swap(connection, wallet, 'testnet');
 
   useEffect(() => {
     wallet.on('connect', () => {
@@ -73,6 +81,8 @@ function App() {
 
     liquidity
       .addLiquidity(
+        connection,
+        wallet,
         coinTokenAccount.address,
         pcTokenAccount.address,
         new PublicKey('ATVkbs8dhnFwAx5VVjYKUE78hpRFHuFPp7gtdz5XYmrY'),
@@ -103,6 +113,8 @@ function App() {
 
     liquidity
       .removeLiquidity(
+        connection,
+        wallet,
         new PublicKey('ATVkbs8dhnFwAx5VVjYKUE78hpRFHuFPp7gtdz5XYmrY'),
         coinTokenAccount.address,
         pcTokenAccount.address,
@@ -133,13 +145,13 @@ function App() {
   }
 
   async function getAmmInfo() {
-    liquidity.getAmmInfo().then(info => {
+    liquidity.getAmmInfo(connection).then(info => {
       console.log(info);
     });
   }
 
   async function getPoolBalance() {
-    liquidity.getPoolBalance().then(balances => {
+    liquidity.getPoolBalance(connection).then(balances => {
       const { coin, pc } = balances;
       console.log(coin, pc);
     });
@@ -199,6 +211,56 @@ function App() {
     });
   }
 
+  function printSwapMarket() {
+    console.log(swap.market);
+  }
+
+  async function getAsks() {
+    swap.getAsks().then(info => {
+      console.log(info);
+
+      for (let order of info) {
+        console.log(
+          order.orderId,
+          order.price,
+          order.size,
+          order.side, // 'buy' or 'sell'
+        );
+        console.log(order);
+      }
+    });
+  }
+
+  async function getBids() {
+    swap.getBids().then(info => {
+      console.log(info);
+
+      for (let order of info) {
+        console.log(
+          order.orderId,
+          order.price,
+          order.size,
+          order.side, // 'buy' or 'sell'
+        );
+        console.log(order);
+      }
+    });
+  }
+
+  async function forecast() {
+    swap
+      .forecast(
+        new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
+        new PublicKey('2hveenCMWYkR5zD7Mzxh2gSCwzfgo7GPWEmyF3FVmwwK'),
+        new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+        new PublicKey('oTVQ6C9zJybQjEzJGutMiKs16SSg2Va1GZaSyqQCqWX'),
+        1 * 1e6,
+      )
+      .then(info => {
+        console.log(info);
+      });
+  }
+
   return (
     <div className="App">
       <div>Network: {network}</div>
@@ -214,6 +276,7 @@ function App() {
         <>
           <div>Wallet address: {wallet.publicKey.toBase58()}</div>
 
+          <h4>liquidity</h4>
           <button onClick={addLiquidity}>addLiquidity</button>
           <button onClick={removeLiquidity}>removeLiquidity</button>
 
@@ -225,7 +288,7 @@ function App() {
           <button onClick={getAmmInfo}>getAmmInfo</button>
           <button onClick={getPoolBalance}>getPoolBalance</button>
 
-          <hr />
+          <h4>staking</h4>
 
           <button onClick={getUserInfoAccount}>getUserInfoAccount</button>
           <button onClick={getUserInfo}>getUserInfo</button>
@@ -234,6 +297,13 @@ function App() {
           <button onClick={getStakeInfo}>getStakeInfo</button>
           <button onClick={getPoolInfo}>getPoolInfo</button>
           <button onClick={getPendingReward}>getPendingReward</button>
+
+          <h4>swap</h4>
+
+          <button onClick={printSwapMarket}>printSwapMarket</button>
+          <button onClick={getAsks}>getAsks</button>
+          <button onClick={getBids}>getBids</button>
+          <button onClick={forecast}>forecast</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

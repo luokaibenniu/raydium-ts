@@ -50,3 +50,8 @@ export interface FarmInfo {
 
   nonce: number;
 }
+
+export interface SwapConfig {
+  slippage: number;
+  partialFill: boolean;
+}

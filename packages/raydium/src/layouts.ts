@@ -1,7 +1,8 @@
 // @ts-nocheck
-import { bits, Blob, Layout, u32, UInt } from 'buffer-layout';
-import { PublicKey } from '@solana/web3.js';
+import { Blob, Layout, UInt, bits, u32 } from 'buffer-layout';
+
 import BN from 'bn.js';
+import { PublicKey } from '@solana/web3.js';
 
 class Zeros extends Blob {
   decode(b, offset) {

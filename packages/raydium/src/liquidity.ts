@@ -6,53 +6,100 @@ import {
 } from '@solana/web3.js';
 import { LIQUIDITY_POOL_PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
 import { nu64, struct, u8 } from 'buffer-layout';
+import { throwIfNull, throwIfUndefined } from './errors';
 
 import { OpenOrders } from '@project-serum/serum';
 import { PoolInfo } from './types';
-import { Account as SolAccount } from './accounts';
+import { getMintDecimals } from './web3';
 import { getPoolByMintAddress } from './pools';
 import { publicKeyLayout } from './layouts';
 import { sendTransaction } from './transactions';
 
 /**
  * Liquidity pool
+
  * @constructor
- * @param {Connection} connection
- * @param {any} wallet
- * @param {string | PublicKey} coinMintAddress
- * @param {string | PublicKey} pcMintAddress
+
+ * @param {PublicKey} programId
+ * @param {PublicKey} pcMintAddress
  * @param {string} [env='mainnet']
  */
 export class Liquidity {
-  private connection: Connection;
-  private wallet: any;
-
-  private account: SolAccount;
-
   private programId: PublicKey;
 
-  public poolInfo: PoolInfo;
+  private poolInfo: PoolInfo;
+  private decoded: any;
+
+  coinDecimals: number;
+  pcDecimals: number;
+  lpDecimals: number;
 
   constructor(
+    programId: PublicKey,
+    poolInfo: PoolInfo,
+    decoded: any,
+    coinDecimals: number,
+    pcDecimals: number,
+    lpDecimals: number,
+  ) {
+    this.programId = programId;
+
+    this.poolInfo = poolInfo;
+    this.decoded = decoded;
+
+    this.coinDecimals = coinDecimals;
+    this.pcDecimals = pcDecimals;
+    this.lpDecimals = lpDecimals;
+  }
+
+  /**
+   * Load liquidity pool
+
+   * @param {Connection} connection
+   * @param {any} wallet
+   * @param {string | PublicKey} coinMintAddress
+   * @param {string | PublicKey} pcMintAddress
+   * @param {string} env
+   */
+  static async load(
     connection: Connection,
     wallet: any,
     coinMintAddress: string | PublicKey,
     pcMintAddress: string | PublicKey,
     env = 'mainnet',
   ) {
-    const poolInfo = getPoolByMintAddress(coinMintAddress, pcMintAddress, env);
+    const poolInfo = throwIfUndefined(
+      getPoolByMintAddress(coinMintAddress, pcMintAddress, env),
+      'Liquidity pool not found',
+    );
 
-    if (!poolInfo) {
-      throw new Error('Invalid pool');
-    }
+    const { data } = throwIfNull(
+      await connection.getAccountInfo(poolInfo.ammId),
+      'Liquidity pool not found',
+    );
 
-    this.connection = connection;
-    this.wallet = wallet;
+    const decoded = this.AmmInfoLayout.decode(data);
 
-    this.account = new SolAccount(connection, SolAccount);
+    // if (decoded.status != 1) {
+    //   throw new Error('Invalid liquidity pool');
+    // }
 
-    this.programId = LIQUIDITY_POOL_PROGRAM_IDS[env];
-    this.poolInfo = poolInfo;
+    const [coinDecimals, pcDecimals, lpDecimals] = await Promise.all([
+      getMintDecimals(connection, poolInfo.coinMintAddress),
+      getMintDecimals(connection, poolInfo.pcMintAddress),
+      getMintDecimals(connection, poolInfo.lpMintAddress),
+    ]);
+
+    const programId = LIQUIDITY_POOL_PROGRAM_IDS[env];
+
+    return new Liquidity(
+      programId,
+      poolInfo,
+      decoded,
+      coinDecimals,
+      pcDecimals,
+      lpDecimals,
+    );
   }
 
   static AmmInfoLayout = struct([
@@ -97,6 +144,8 @@ export class Liquidity {
   /**
    * Deposit two tokens to liquidity pool
 
+   * @param {Connection} connection
+   * @param {any} wallet
    * @param {PublicKey} userCoinTokenAccount
    * @param {PublicKey} userPcTokenAccount
    * @param {PublicKey} userLpTokenAccount
@@ -109,6 +158,8 @@ export class Liquidity {
    * @returns {string} txid
    */
   async addLiquidity(
+    connection: Connection,
+    wallet: any,
     userCoinTokenAccount: PublicKey,
     userPcTokenAccount: PublicKey,
     userLpTokenAccount: PublicKey,
@@ -149,8 +200,8 @@ export class Liquidity {
     );
 
     return await sendTransaction(
-      this.connection,
-      this.wallet,
+      connection,
+      wallet,
       instructions.concat(cleanupInstructions),
       signers,
       awaitConfirmation,
@@ -224,6 +275,8 @@ export class Liquidity {
   /**
    * Withdraw two tokens from liquidity pool
 
+   * @param {Connection} connection
+   * @param {any} wallet
    * @param {PublicKey} userLpTokenAccount
    * @param {PublicKey} userCoinTokenAccount
    * @param {PublicKey} userPcTokenAccount
@@ -234,6 +287,8 @@ export class Liquidity {
    * @returns {string} txid
    */
   async removeLiquidity(
+    connection: Connection,
+    wallet: any,
     userLpTokenAccount: PublicKey,
     userCoinTokenAccount: PublicKey,
     userPcTokenAccount: PublicKey,
@@ -276,8 +331,8 @@ export class Liquidity {
     );
 
     return await sendTransaction(
-      this.connection,
-      this.wallet,
+      connection,
+      wallet,
       instructions.concat(cleanupInstructions),
       signers,
       awaitConfirmation,
@@ -351,8 +406,8 @@ export class Liquidity {
     });
   }
 
-  async getAmmInfo() {
-    const info = await this.connection.getAccountInfo(this.poolInfo.ammId);
+  async getAmmInfo(connection: Connection) {
+    const info = await connection.getAccountInfo(this.poolInfo.ammId);
 
     return Liquidity.AmmInfoLayout.decode(info?.data);
   }
@@ -360,33 +415,27 @@ export class Liquidity {
   /**
    * Get this liquidity pool unused balance
    */
-  async getUnusedBalance() {
+  async getUnusedBalance(connection: Connection) {
     const { poolCoinTokenAccount, poolPcTokenAccount } = this.poolInfo;
 
-    const poolCoinInfo = await this.connection.getTokenAccountBalance(
+    const poolCoinInfo = await connection.getTokenAccountBalance(
       poolCoinTokenAccount,
     );
-    const poolPcInfo = await this.connection.getTokenAccountBalance(
+    const poolPcInfo = await connection.getTokenAccountBalance(
       poolPcTokenAccount,
     );
 
     return {
-      unusedCoin: {
-        balance: parseInt(poolCoinInfo.value.amount),
-        decimals: poolCoinInfo.value.decimals,
-      },
-      unusedPc: {
-        balance: parseInt(poolPcInfo.value.amount),
-        decimals: poolPcInfo.value.decimals,
-      },
+      unusedCoin: parseInt(poolCoinInfo.value.amount),
+      unusedPc: parseInt(poolPcInfo.value.amount),
     };
   }
 
   /**
    * Get this liquidity pool's open orders
    */
-  async getOpenOrders() {
-    const accountInfo = await this.connection.getAccountInfo(
+  async getOpenOrders(connection: Connection) {
+    const accountInfo = await connection.getAccountInfo(
       this.poolInfo.ammOpenOrders,
     );
 
@@ -412,25 +461,20 @@ export class Liquidity {
   /**
    * Get this liquidity pool's total balances
    */
-  async getPoolBalance() {
-    const { unusedCoin, unusedPc } = await this.getUnusedBalance();
+  async getPoolBalance(connection: Connection) {
+    const { unusedCoin, unusedPc } = await this.getUnusedBalance(connection);
 
-    const { baseTokenTotal, quoteTokenTotal } = await this.getOpenOrders();
+    const { baseTokenTotal, quoteTokenTotal } = await this.getOpenOrders(
+      connection,
+    );
 
-    const { needTakePnlCoin, needTakePnlPc } = await this.getAmmInfo();
+    const { needTakePnlCoin, needTakePnlPc } = await this.getAmmInfo(
+      connection,
+    );
 
-    const coinBalance = unusedCoin.balance + baseTokenTotal - needTakePnlCoin;
-    const pcBalance = unusedPc.balance + quoteTokenTotal - needTakePnlPc;
+    const coinBalance = unusedCoin + baseTokenTotal - needTakePnlCoin;
+    const pcBalance = unusedPc + quoteTokenTotal - needTakePnlPc;
 
-    const coin = {
-      balance: coinBalance,
-      decimals: unusedCoin.decimals,
-    };
-    const pc = {
-      balance: pcBalance,
-      decimals: unusedPc.decimals,
-    };
-
-    return { coin, pc };
+    return { coin: coinBalance, pc: pcBalance };
   }
 }

@@ -5,5 +5,6 @@ export * from './farms/index';
 
 export * from './accounts';
 
+export * from './swap';
 export * from './liquidity';
 export * from './staking';
