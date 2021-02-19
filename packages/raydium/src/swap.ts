@@ -10,6 +10,9 @@ import { SERUM_PROGRAM_IDS_V2 } from './ids';
 import { SwapConfig } from './types';
 import { getPoolByMintAddress } from './pools';
 
+/**
+ * Swap
+ */
 export class Swap {
   private market: Market | undefined;
 
@@ -17,6 +20,14 @@ export class Swap {
     this.market = market;
   }
 
+  /**
+   * Load swap
+
+   * @param {Connection} connection
+   * @param {string | PublicKey} coinMintAddress
+   * @param {string | PublicKey} pcMintAddress
+   * @param {string} env
+   */
   static async load(
     connection: Connection,
     coinMintAddress: string | PublicKey,
@@ -185,12 +196,21 @@ export class Swap {
     };
   }
 
+  /**
+   * Forecast swap info
+
+   * @param {Connection} connection
+   * @param {string | PublicKey} fromMintAddress
+   * @param {string | PublicKey} toMintAddress
+   * @param {number} amountIn
+   * @param {SwapConfig} swapConfig
+   */
   async forecast(
     connection: Connection,
     fromMintAddress: PublicKey,
     toMintAddress: PublicKey,
     amountIn: number,
-    tradeConfig: SwapConfig = { slippage: 100, partialFill: true },
+    swapConfig: SwapConfig = { slippage: 100, partialFill: true },
   ) {
     const side = this.getSide(fromMintAddress, toMintAddress);
     let orderBook;
@@ -204,6 +224,18 @@ export class Swap {
     }
   }
 
+  /**
+   * Swap
+
+   * @param {Connection} connection
+   * @param {any} wallet
+   * @param {string | PublicKey} fromMintAddress
+   * @param {string | PublicKey} toMintAddress
+   * @param {string | PublicKey} fromTokenAccount
+   * @param {string | PublicKey} toTokenAccount
+   * @param {ForecastConfig} forecastConfig
+   * @param {SwapConfig} swapConfig
+   */
   async swap(
     connection: Connection,
     wallet: any,
@@ -212,7 +244,7 @@ export class Swap {
     fromTokenAccount: PublicKey,
     toTokenAccount: PublicKey,
     forecastConfig,
-    tradeConfig: SwapConfig = { slippage: 100, partialFill: true },
+    swapConfig: SwapConfig = { slippage: 100, partialFill: true },
   ) {
     const order = await this.market?.makePlaceOrderTransaction(connection, {
       owner: wallet.publicKey,

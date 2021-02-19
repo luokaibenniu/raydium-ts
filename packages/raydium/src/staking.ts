@@ -22,11 +22,6 @@ import { publicKeyLayout } from './layouts';
 
 /**
  * Staking pool
- * @constructor
- * @param {Connection} connection
- * @param {any} wallet
- * @param {string | PublicKey} lpMintAddress
- * @param {string} [env='mainnet']
  */
 export class Staking {
   private programId: PublicKey;
@@ -53,9 +48,15 @@ export class Staking {
     this.rewardDecimals = rewardDecimals;
   }
 
+  /**
+   * Load staking pool
+
+   * @param {Connection} connection
+   * @param {string | PublicKey} lpMintAddress
+   * @param {string} env
+   */
   static async load(
     connection: Connection,
-    wallet: any,
     lpMintAddress: string | PublicKey,
     env = 'mainnet',
   ) {

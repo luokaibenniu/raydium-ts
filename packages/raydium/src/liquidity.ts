@@ -17,12 +17,6 @@ import { publicKeyLayout } from './layouts';
 
 /**
  * Liquidity pool
-
- * @constructor
-
- * @param {PublicKey} programId
- * @param {PublicKey} pcMintAddress
- * @param {string} [env='mainnet']
  */
 export class Liquidity {
   private programId: PublicKey;
@@ -56,14 +50,12 @@ export class Liquidity {
    * Load liquidity pool
 
    * @param {Connection} connection
-   * @param {any} wallet
    * @param {string | PublicKey} coinMintAddress
    * @param {string | PublicKey} pcMintAddress
    * @param {string} env
    */
   static async load(
     connection: Connection,
-    wallet: any,
     coinMintAddress: string | PublicKey,
     pcMintAddress: string | PublicKey,
     env = 'mainnet',
