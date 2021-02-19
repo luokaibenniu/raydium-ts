@@ -36,7 +36,6 @@ function App() {
   let liquidity;
   Liquidity.load(
     connection,
-    wallet,
     link.mintAddress,
     usdt.mintAddress,
     'mainnet',
@@ -48,7 +47,6 @@ function App() {
   let staking;
   // Staking.load(
   //   connection,
-  //   wallet,
   //   'FeFagq8SEK9W3Z2DJ7mNFiKMvEoTTS5STQFSVh1q98jA',
   //   'testnet',
   // ).then(_staking => {
