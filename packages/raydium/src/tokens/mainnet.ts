@@ -161,6 +161,16 @@ const tokens = {
     name: 'MAPS',
     decimals: 6,
   },
+  COIN: {
+    mintAddress: new PublicKey('892ghevHKmmyV7vWJY6bmqA4ArxirYNRdnauUdx7q8R7'),
+    name: 'COIN',
+    decimals: 6,
+  },
+  PC: {
+    mintAddress: new PublicKey('BwRU49p5FWwXvFqUXjbQqbnKvgpymxQKTJE2tQQCgLzJ'),
+    name: 'PC',
+    decimals: 6,
+  },
 };
 
 export default tokens;
