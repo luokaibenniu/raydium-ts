@@ -308,6 +308,22 @@ function App() {
       });
   }
 
+  async function settle() {
+    swap
+      .settle(
+        connection,
+        wallet,
+        new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
+        new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+        new PublicKey('2hveenCMWYkR5zD7Mzxh2gSCwzfgo7GPWEmyF3FVmwwK'),
+        new PublicKey('oTVQ6C9zJybQjEzJGutMiKs16SSg2Va1GZaSyqQCqWX'),
+        forecastResult,
+      )
+      .then(info => {
+        console.log(info);
+      });
+  }
+
   return (
     <div className="App">
       <div>Network: {network}</div>
@@ -352,6 +368,7 @@ function App() {
           <button onClick={getBids}>getBids</button>
           <button onClick={forecast}>forecast</button>
           <button onClick={doSwap}>doSwap</button>
+          <button onClick={settle}>settle</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

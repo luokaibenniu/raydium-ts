@@ -1,4 +1,4 @@
-import { Connection, PublicKey } from '@solana/web3.js';
+import { Account, Connection, PublicKey, Transaction } from '@solana/web3.js';
 import {
   getFilteredProgramAccounts,
   mergeTransactions,
@@ -257,6 +257,7 @@ export class Swap {
     const signers = order?.signers;
 
     const settleTransactions = [];
+    // https://github.com/project-serum/serum-dex/blob/1a9aee6e745e77155b7974e1df06c1ebc97bfae0/dex/src/instruction.rs#L478
     // let baseTokenAccount;
     // let quoteTokenAccount;
 
@@ -290,6 +291,48 @@ export class Swap {
       this.market?.makeMatchOrdersTransaction(5),
       ...settleTransactions,
     ]);
+
+    return await sendTransaction(connection, wallet, transaction, signers);
+  }
+
+  async settle(
+    connection: Connection,
+    wallet: any,
+    fromMintAddress: PublicKey,
+    toMintAddress: PublicKey,
+    fromTokenAccount: PublicKey,
+    toTokenAccount: PublicKey,
+    forecastConfig,
+  ) {
+    let baseTokenAccount;
+    let quoteTokenAccount;
+
+    const settleTransactions: Array<Transaction | undefined> = [];
+
+    if (forecastConfig.maxInAllow === 'buy') {
+      baseTokenAccount = toTokenAccount;
+      quoteTokenAccount = fromTokenAccount;
+    } else {
+      baseTokenAccount = fromTokenAccount;
+      quoteTokenAccount = toTokenAccount;
+    }
+
+    for (const openOrders of (await this.market?.findOpenOrdersAccountsForOwner(
+      connection,
+      wallet.publicKey,
+    )) || []) {
+      const settle = await this.market?.makeSettleFundsTransaction(
+        connection,
+        openOrders,
+        baseTokenAccount,
+        quoteTokenAccount,
+      );
+
+      settleTransactions.push(settle?.transaction);
+    }
+
+    const transaction = mergeTransactions(settleTransactions);
+    const signers: Account[] = [];
 
     return await sendTransaction(connection, wallet, transaction, signers);
   }
