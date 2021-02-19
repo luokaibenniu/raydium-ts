@@ -39,6 +39,7 @@ export interface PoolInfo {
 }
 
 export interface FarmInfo {
+  name: string;
   lpMintAddress: PublicKey;
   rewardMintAddress: PublicKey;
 
