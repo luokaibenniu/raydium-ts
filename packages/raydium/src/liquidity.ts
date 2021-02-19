@@ -19,10 +19,10 @@ import { publicKeyLayout } from './layouts';
  * Liquidity pool
  */
 export class Liquidity {
-  private programId: PublicKey;
+  public programId: PublicKey;
 
-  private poolInfo: PoolInfo;
-  private decoded: any;
+  public poolInfo: PoolInfo;
+  public decoded: any;
 
   coinDecimals: number;
   pcDecimals: number;

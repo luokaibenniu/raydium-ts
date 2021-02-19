@@ -24,10 +24,10 @@ import { publicKeyLayout } from './layouts';
  * Staking pool
  */
 export class Staking {
-  private programId: PublicKey;
+  public programId: PublicKey;
 
-  private farmInfo: FarmInfo;
-  private decoded: any;
+  public farmInfo: FarmInfo;
+  public decoded: any;
 
   lpDecimals: number;
   rewardDecimals: number;

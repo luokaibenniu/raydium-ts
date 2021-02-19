@@ -14,7 +14,7 @@ import { getPoolByMintAddress } from './pools';
  * Swap
  */
 export class Swap {
-  private market: Market | undefined;
+  public market: Market | undefined;
 
   constructor(market: Market) {
     this.market = market;
