@@ -49,6 +49,14 @@ export class Swap {
     // this.poolInfo = poolInfo;
   }
 
+  static async load(
+    connection: Connection,
+    wallet: any,
+    coinMintAddress: string | PublicKey,
+    pcMintAddress: string | PublicKey,
+    env = 'mainnet',
+  ) {}
+
   async init() {
     this.market = await Market.load(
       this.connection,

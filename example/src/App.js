@@ -16,9 +16,9 @@ function App() {
     setLogs(logs => [...logs, log]);
   }
 
-  // const network = clusterApiUrl('mainnet-beta');
+  const network = clusterApiUrl('mainnet-beta');
   // const network = clusterApiUrl('devnet');
-  const network = clusterApiUrl('testnet');
+  // const network = clusterApiUrl('testnet');
   // const network = 'http://127.0.0.1:8899';
   const [providerUrl, setProviderUrl] = useState('https://www.sollet.io');
 
@@ -45,20 +45,21 @@ function App() {
   //   console.log(liquidity);
   // });
 
-  let staking = Staking.load(
-    connection,
-    wallet,
-    'FeFagq8SEK9W3Z2DJ7mNFiKMvEoTTS5STQFSVh1q98jA',
-    'testnet',
-  ).then(_staking => {
-    staking = _staking;
-    console.log(_staking);
-  });
+  let staking;
+  // Staking.load(
+  //   connection,
+  //   wallet,
+  //   'FeFagq8SEK9W3Z2DJ7mNFiKMvEoTTS5STQFSVh1q98jA',
+  //   'testnet',
+  // ).then(_staking => {
+  //   staking = _staking;
+  //   console.log(_staking);
+  // });
 
   const account = new Account(connection, wallet);
 
-  let swap;
-  // const swap = new Swap(connection, wallet, 'testnet');
+  // let swap;
+  const swap = new Swap(connection, wallet, 'testnet');
 
   useEffect(() => {
     wallet.on('connect', () => {
