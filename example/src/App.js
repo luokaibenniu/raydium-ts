@@ -34,16 +34,16 @@ function App() {
   const usdt = getTokenBySymbol('USDT');
 
   let liquidity;
-  // Liquidity.load(
-  //   connection,
-  //   wallet,
-  //   link.mintAddress,
-  //   usdt.mintAddress,
-  //   'mainnet',
-  // ).then(_liquidity => {
-  //   liquidity = _liquidity;
-  //   console.log(liquidity);
-  // });
+  Liquidity.load(
+    connection,
+    wallet,
+    link.mintAddress,
+    usdt.mintAddress,
+    'mainnet',
+  ).then(_liquidity => {
+    liquidity = _liquidity;
+    console.log(liquidity);
+  });
 
   let staking;
   // Staking.load(
@@ -58,8 +58,18 @@ function App() {
 
   const account = new Account(connection, wallet);
 
-  // let swap;
-  const swap = new Swap(connection, wallet, 'testnet');
+  let swap;
+  Swap.load(
+    connection,
+    new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
+    new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+    'mainnet',
+  ).then(_swap => {
+    console.log(_swap);
+    swap = _swap;
+  });
+
+  let forecastResult;
 
   useEffect(() => {
     wallet.on('connect', () => {
@@ -225,7 +235,7 @@ function App() {
   }
 
   async function getAsks() {
-    swap.getAsks().then(info => {
+    swap.getAsks(connection).then(info => {
       console.log(info);
 
       for (let order of info) {
@@ -241,7 +251,7 @@ function App() {
   }
 
   async function getBids() {
-    swap.getBids().then(info => {
+    swap.getBids(connection).then(info => {
       console.log(info);
 
       for (let order of info) {
@@ -257,13 +267,43 @@ function App() {
   }
 
   async function forecast() {
+    // buy
+    // swap
+    //   .forecast(
+    //     connection,
+    //     new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+    //     new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
+    //     100,
+    //   )
+    //   .then(info => {
+    //     forecastResult = info;
+    //     console.log(info);
+    //   });
+    // sell
     swap
       .forecast(
+        connection,
         new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
-        new PublicKey('2hveenCMWYkR5zD7Mzxh2gSCwzfgo7GPWEmyF3FVmwwK'),
         new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+        1,
+      )
+      .then(info => {
+        forecastResult = info;
+        console.log(info);
+      });
+  }
+
+  async function doSwap() {
+    // sell
+    swap
+      .swap(
+        connection,
+        wallet,
+        new PublicKey('95s818jz139xN4kqPhiQPF861Ui8wwEpVMogXcrYV8tK'),
+        new PublicKey('BWaTu4seVkcaa2q6BsuBERFik4Y6Zpj1BppqaTxxC75j'),
+        new PublicKey('2hveenCMWYkR5zD7Mzxh2gSCwzfgo7GPWEmyF3FVmwwK'),
         new PublicKey('oTVQ6C9zJybQjEzJGutMiKs16SSg2Va1GZaSyqQCqWX'),
-        1 * 1e6,
+        forecastResult,
       )
       .then(info => {
         console.log(info);
@@ -313,6 +353,7 @@ function App() {
           <button onClick={getAsks}>getAsks</button>
           <button onClick={getBids}>getBids</button>
           <button onClick={forecast}>forecast</button>
+          <button onClick={doSwap}>doSwap</button>
         </>
       ) : (
         <button onClick={() => wallet.connect()}>Connect to Wallet</button>

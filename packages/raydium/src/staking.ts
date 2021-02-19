@@ -4,16 +4,20 @@ import {
   PublicKey,
   SYSVAR_CLOCK_PUBKEY,
   SystemProgram,
+  Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
 import { STAKE_PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
-import { getFilteredProgramAccounts, sendTransaction } from './transactions';
+import {
+  getFilteredProgramAccounts,
+  getMintDecimals,
+  sendTransaction,
+} from './web3';
 import { nu64, struct, u8 } from 'buffer-layout';
 import { throwIfNull, throwIfUndefined } from './errors';
 
 import { FarmInfo } from './types';
 import { getFarmByLpMintAddress } from './farms';
-import { getMintDecimals } from './web3';
 import { publicKeyLayout } from './layouts';
 
 /**
@@ -138,7 +142,6 @@ export class Staking {
    * @param {PublicKey} userLpTokenAccount
    * @param {PublicKey} userRewardTokenAccount
    * @param {number} amount
-   * @param {boolean} [awaitConfirmation=true]
 
    * @returns {string} txid
    */
@@ -148,11 +151,8 @@ export class Staking {
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
     amount: number,
-
-    awaitConfirmation = true,
   ): Promise<string> {
-    const instructions: TransactionInstruction[] = [];
-    const cleanupInstructions: TransactionInstruction[] = [];
+    const transaction = new Transaction();
     const signers: Account[] = [];
 
     const userInfoAccounts = await this.getUserInfoAccount(connection, wallet);
@@ -164,7 +164,7 @@ export class Staking {
     } else {
       const newUserInfoAccount = new Account();
 
-      instructions.push(
+      transaction.add(
         await SystemProgram.createAccount({
           fromPubkey: wallet.publicKey,
           newAccountPubkey: newUserInfoAccount.publicKey,
@@ -181,7 +181,7 @@ export class Staking {
       signers.push(newUserInfoAccount);
     }
 
-    instructions.push(
+    transaction.add(
       this.depositInstruction(
         this.programId,
         this.farmInfo.poolId,
@@ -197,13 +197,7 @@ export class Staking {
       ),
     );
 
-    return await sendTransaction(
-      connection,
-      wallet,
-      instructions.concat(cleanupInstructions),
-      signers,
-      awaitConfirmation,
-    );
+    return await sendTransaction(connection, wallet, transaction, signers);
   }
 
   depositInstruction(
@@ -259,7 +253,6 @@ export class Staking {
    * @param {PublicKey} userLpTokenAccount
    * @param {PublicKey} userRewardTokenAccount
    * @param {number} amount
-   * @param {boolean} [awaitConfirmation=true]
 
    * @returns {string} txid
    */
@@ -269,17 +262,14 @@ export class Staking {
     userLpTokenAccount: PublicKey,
     userRewardTokenAccount: PublicKey,
     amount: number,
-
-    awaitConfirmation = true,
   ): Promise<string> {
-    const instructions: TransactionInstruction[] = [];
-    const cleanupInstructions: TransactionInstruction[] = [];
+    const transaction = new Transaction();
     const signers: Account[] = [];
 
     const userInfoAccounts = await this.getUserInfoAccount(connection, wallet);
     const userInfoAccount = userInfoAccounts[0].publicKey;
 
-    instructions.push(
+    transaction.add(
       this.withdrawInstruction(
         this.programId,
         this.farmInfo.poolId,
@@ -294,13 +284,7 @@ export class Staking {
       ),
     );
 
-    return await sendTransaction(
-      connection,
-      wallet,
-      instructions.concat(cleanupInstructions),
-      signers,
-      awaitConfirmation,
-    );
+    return await sendTransaction(connection, wallet, transaction, signers);
   }
 
   withdrawInstruction(

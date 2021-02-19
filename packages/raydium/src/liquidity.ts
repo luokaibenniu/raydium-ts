@@ -2,18 +2,18 @@ import {
   Account,
   Connection,
   PublicKey,
+  Transaction,
   TransactionInstruction,
 } from '@solana/web3.js';
 import { LIQUIDITY_POOL_PROGRAM_IDS, TOKEN_PROGRAM_ID } from './ids';
+import { getMintDecimals, sendTransaction } from './web3';
 import { nu64, struct, u8 } from 'buffer-layout';
 import { throwIfNull, throwIfUndefined } from './errors';
 
 import { OpenOrders } from '@project-serum/serum';
 import { PoolInfo } from './types';
-import { getMintDecimals } from './web3';
 import { getPoolByMintAddress } from './pools';
 import { publicKeyLayout } from './layouts';
-import { sendTransaction } from './transactions';
 
 /**
  * Liquidity pool
@@ -153,7 +153,6 @@ export class Liquidity {
    * @param {number} maxCoinAmount
    * @param {number} maxPcAmount
    * @param {number} tolerate - 1 meaning 0.01%
-   * @param {boolean} [awaitConfirmation=true]
 
    * @returns {string} txid
    */
@@ -167,14 +166,11 @@ export class Liquidity {
     maxCoinAmount: number,
     maxPcAmount: number,
     tolerate: number,
-
-    awaitConfirmation = true,
   ): Promise<string> {
-    const instructions: TransactionInstruction[] = [];
-    const cleanupInstructions: TransactionInstruction[] = [];
+    const transaction = new Transaction();
     const signers: Account[] = [];
 
-    instructions.push(
+    transaction.add(
       this.addLiquidityInstruction(
         this.programId,
 
@@ -199,13 +195,7 @@ export class Liquidity {
       ),
     );
 
-    return await sendTransaction(
-      connection,
-      wallet,
-      instructions.concat(cleanupInstructions),
-      signers,
-      awaitConfirmation,
-    );
+    return await sendTransaction(connection, wallet, transaction, signers);
   }
 
   addLiquidityInstruction(
@@ -282,7 +272,6 @@ export class Liquidity {
    * @param {PublicKey} userPcTokenAccount
    * @param {PublicKey} userOwner
    * @param {number} amount - lp token amount that want to withdraw
-   * @param {boolean} [awaitConfirmation=true]
 
    * @returns {string} txid
    */
@@ -294,14 +283,11 @@ export class Liquidity {
     userPcTokenAccount: PublicKey,
     userOwner: PublicKey,
     amount: number,
-
-    awaitConfirmation = true,
   ): Promise<string> {
-    const instructions: TransactionInstruction[] = [];
-    const cleanupInstructions: TransactionInstruction[] = [];
+    const transaction = new Transaction();
     const signers: Account[] = [];
 
-    instructions.push(
+    transaction.add(
       this.removeLiquidityInstruction(
         this.programId,
 
@@ -330,13 +316,7 @@ export class Liquidity {
       ),
     );
 
-    return await sendTransaction(
-      connection,
-      wallet,
-      instructions.concat(cleanupInstructions),
-      signers,
-      awaitConfirmation,
-    );
+    return await sendTransaction(connection, wallet, transaction, signers);
   }
 
   removeLiquidityInstruction(
