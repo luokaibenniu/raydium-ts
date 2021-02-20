@@ -8,18 +8,18 @@ const farms: FarmInfo[] = [
       'HnkvybuszQLAfUbjzgvX6526qihfFDnjrB7FkDLQJ3Yt',
     ),
     rewardMintAddress: new PublicKey(
-      'J7VsgcrWqr63SZLvSKf8oivWf1r129up6hjrjBJnor4z',
+      '8ed3VwZLFA8shoDhLU4QXY3jydKw7m5QrT8JLpjQnZcW',
     ),
 
-    poolId: new PublicKey('HSuYKUExxFMAESFam2ha1zFsofszCq5UeXnJfrKfvHU2'),
+    poolId: new PublicKey('FZRkfi9bpjAcjukmgCNa3tVpZ98m7yFr8F8R6TWaexcs'),
     poolAuthority: new PublicKey(
-      '6PRkZ1cxEZWcDfQcMrceGomsG16KGPzD5TmsQc8oDmrc',
+      '53pAumqGhESMKACT7A6gdUDguPoLTBtUyXpdCdSFepZz',
     ),
     poolLpTokenAccount: new PublicKey(
-      '4ogDK8CNbEt2wcrgWBsHCXn9e6W2eGFeVitdYVDQqiiA',
+      'Dp3bocwwbyY5TpcnKz3Y8VhknDVagfKdFyGyzhf5bkRF',
     ),
     poolRewardTokenAccount: new PublicKey(
-      'Bv5n1HrHpBBUerJ1vPCr928hQCzNMVxzHzEDaUPeTLeP',
+      'EbNNUoNQXzuzvEt4kqZGuVm19pxPKtb1AFu4UZYyr89e',
     ),
 
     nonce: 255,
