@@ -171,6 +171,11 @@ const tokens = {
     name: 'PC',
     decimals: 6,
   },
+  RAY: {
+    mintAddress: new PublicKey('4k3Dyjzvzp8eMZWUXbBCjEvwSkkk59S5iCNLY3QrkX6R'),
+    name: 'Raydium',
+    decimals: 6,
+  },
 };
 
 export default tokens;
