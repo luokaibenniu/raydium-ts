@@ -1,11 +1,17 @@
-import { Account, Connection, PublicKey, Transaction } from '@solana/web3.js';
+import {
+  Account,
+  Connection,
+  PublicKey,
+  SystemProgram,
+  Transaction,
+} from '@solana/web3.js';
+import { DexInstructions, Market } from '@project-serum/serum';
 import {
   getFilteredProgramAccounts,
   mergeTransactions,
   sendTransaction,
 } from './web3';
 
-import { Market } from '@project-serum/serum';
 import { SERUM_PROGRAM_IDS_V2 } from './ids';
 import { SwapConfig } from './types';
 import { getPoolByMintAddress } from './pools';
@@ -256,7 +262,7 @@ export class Swap {
     });
     const signers = order?.signers;
 
-    const settleTransactions = [];
+    // const settleTransactions = [];
     // https://github.com/project-serum/serum-dex/blob/1a9aee6e745e77155b7974e1df06c1ebc97bfae0/dex/src/instruction.rs#L478
     // let baseTokenAccount;
     // let quoteTokenAccount;
@@ -269,18 +275,22 @@ export class Swap {
     //   quoteTokenAccount = toTokenAccount;
     // }
 
-    // for (const openOrders of await this.market?.findOpenOrdersAccountsForOwner(
+    // const openOrdersAccounts = [];
+
+    // for (const openOrder of await this.market?.findOpenOrdersAccountsForOwner(
     //   connection,
     //   wallet.publicKey,
     // )) {
+    //   openOrdersAccounts.push(openOrder.address);
+
     //   const settle = await this.market?.makeSettleFundsTransaction(
     //     connection,
-    //     openOrders,
+    //     openOrder,
     //     baseTokenAccount,
     //     quoteTokenAccount,
     //   );
 
-    //   console.log(openOrders);
+    //   console.log(openOrder.address.toBase58());
 
     //   settleTransactions.push(settle?.transaction);
     // }
@@ -289,7 +299,30 @@ export class Swap {
       this.market?.makeMatchOrdersTransaction(5),
       order?.transaction,
       this.market?.makeMatchOrdersTransaction(5),
-      ...settleTransactions,
+      // new Transaction().add(
+      //   DexInstructions.consumeEvents({
+      //     market: this.market?.address,
+      //     eventQueue: this.market._decoded.eventQueue,
+      //     openOrdersAccounts: [
+      //       ...openOrdersAccounts,
+      //       ...[this.market._decoded.eventQueue],
+      //     ],
+      //     limit: 11,
+      //     programId: this.market?._programId,
+      //   }),
+      // ),
+      // new Transaction().add(
+      //   SystemProgram.transfer({
+      //     fromPubkey: new PublicKey(
+      //       'GM5AshNsbr9cjrGJPwBuarPuxSSnXpz99wBdXgY2489G',
+      //     ),
+      //     toPubkey: new PublicKey(
+      //       'GM5AshNsbr9cjrGJPwBuarPuxSSnXpz99wBdXgY2489G',
+      //     ),
+      //     lamports: 0.000005 * 1e9,
+      //   }),
+      // ),
+      // ...settleTransactions,
     ]);
 
     return await sendTransaction(connection, wallet, transaction, signers);

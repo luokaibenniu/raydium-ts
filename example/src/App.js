@@ -3,6 +3,7 @@ import {
   Liquidity,
   Staking,
   Swap,
+  TOKENS,
   getTokenBySymbol,
 } from '../../packages/raydium';
 import { Connection, PublicKey, clusterApiUrl } from '@solana/web3.js';
@@ -305,6 +306,9 @@ function App() {
       )
       .then(info => {
         console.log(info);
+      })
+      .catch(error => {
+        console.log(error);
       });
   }
 
