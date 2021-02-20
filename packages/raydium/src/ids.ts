@@ -19,7 +19,7 @@ export const LIQUIDITY_POOL_PROGRAM_IDS = {
 };
 
 export const STAKE_PROGRAM_IDS = {
-  mainnet: new PublicKey('FZRkfi9bpjAcjukmgCNa3tVpZ98m7yFr8F8R6TWaexcs'),
+  mainnet: new PublicKey('EhhTKczWMGQt46ynNeRX1WfeagwwJd7ufHvCDjRxjo5Q'),
   // devnet: new PublicKey('6PUttG2hA9VLJje28T2LmvP1vcE2iUayHQCiv1m4Xytk'),
   testnet: new PublicKey('GaB2BKGPefabDCvZZxjHCf56JHaGb2PjkrAFDp6wcT8d'),
 };
