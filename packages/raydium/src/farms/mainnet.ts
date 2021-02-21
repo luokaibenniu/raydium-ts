@@ -3,6 +3,28 @@ import { PublicKey } from '@solana/web3.js';
 
 const farms: FarmInfo[] = [
   {
+    name: 'LINK-USDT',
+    lpMintAddress: new PublicKey(
+      'EVDmwajM5U73PD34bYPugwiA4Eqqbrej4mLXXv15Z5qR',
+    ),
+    rewardMintAddress: new PublicKey(
+      '8ed3VwZLFA8shoDhLU4QXY3jydKw7m5QrT8JLpjQnZcW',
+    ),
+
+    poolId: new PublicKey('2RnSyeMA9yFEecei7wzpFco8tqFwLqtWuhiP52V1DpaZ'),
+    poolAuthority: new PublicKey(
+      'Gd7YPXdnjLoqQGcTu9DHZE5zYNxauEZN7hib9w3SXrLm',
+    ),
+    poolLpTokenAccount: new PublicKey(
+      '8upYQb9PVeRYUqYZyVPDMNo3ByJm5aoM94RRUbwX4cHZ', // lp vault
+    ),
+    poolRewardTokenAccount: new PublicKey(
+      'NC59juF7jb9mqgSuXS4YMxRjpg8NQdtXEXqxNXfDmAM', // reward vault
+    ),
+
+    nonce: 254,
+  },
+  {
     name: 'RAY-USDT',
     lpMintAddress: new PublicKey(
       'CzPDyvotTcxNqtPne32yUiEVQ6jk42HZi1Y3hUu7qf7f',
